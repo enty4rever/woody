@@ -2,7 +2,8 @@
 // Field order follows PLAN.md section 1 and data-input.md.
 
 export interface ProductImage {
-  src: string;
+  /** File name in src/assets/products/, without ".webp" (resolved by src/lib/images.ts). */
+  file: string;
   alt: string;
 }
 
@@ -63,8 +64,8 @@ export interface Product {
   faq: FaqItem[];
   /** 4–5 numbered points on the product page. */
   features: ProductFeature[];
-  /** Cabinet only: photo with the doors open. */
-  openImage?: ProductImage;
+  /** Cabinet only: closed and open views for the door toggle. */
+  doorImages?: { closed: ProductImage; open: ProductImage };
   /** Cabinet only: room in cm needed in front to pull out the drawers. Added to depth in the fit checker. */
   frontClearanceCm?: number;
   /** True while the entry holds sample data. The production build refuses to run. */
@@ -72,10 +73,28 @@ export interface Product {
 }
 
 /** Every product image is a rendering, so every alt text starts with "Rendering: ". */
-const img = (file: string, alt: string): ProductImage => ({
-  src: `/images/placeholder/${file}.svg`,
-  alt: `Rendering: ${alt}`,
-});
+const img = (file: string, alt: string): ProductImage => ({ file, alt: `Rendering: ${alt}` });
+
+// Text printed inside the diagram renders, word for word, so screen readers get it too.
+const CABINET_DIMENSIONS_TEXT =
+  'Measure your space. Cabinet dimensions. 54 in / 1372 mm. 32 in / 813 mm. 14 in / 356 mm.';
+const CABINET_ASSEMBLY_TEXT =
+  'Step 01: Unpack and check every part. Step 02: Follow the picture guide. No tools needed. ' +
+  'Step 03: Fit the legs, shelves and glass doors. Step 04: Anchor to the wall. Check the doors slide smoothly.';
+const SHELF_DIMENSIONS_TEXT =
+  'Fits the corner. Shelf dimensions. 47 in / 1194 mm. 21.2 in / 539 mm. 15 in / 381 mm. 15 in / 381 mm.';
+const SHELF_ASSEMBLY_TEXT =
+  'Step 01: Check all parts against the list. Step 02: Follow the picture guide. No tools needed. ' +
+  'Step 03: Slide the posts in, tier by tier. Step 04: Anchor to the wall. Check it stands level.';
+
+const cabinetAngle = img('cabinet-angle', 'Cabinet, angled view with the doors closed');
+const cabinetStyled = img('cabinet-styled', 'Cabinet with one door slid open, styled with glassware and ceramics');
+
+/** Assembly renders, also shown on the Support page (#assembly). */
+export const assemblyImages = {
+  cabinet: img('cabinet-assembly', `Cabinet assembly steps. ${CABINET_ASSEMBLY_TEXT}`),
+  shelf: img('shelf-assembly', `Corner shelf assembly steps. ${SHELF_ASSEMBLY_TEXT}`),
+};
 
 export const products: Product[] = [
   {
@@ -91,21 +110,17 @@ export const products: Product[] = [
     finish: '[SAMPLE] finish',
     colors: [
       {
-        id: 'color-1',
-        name: '[SAMPLE] color 1',
-        hex: '#a07a55',
+        id: 'walnut',
+        name: 'Walnut',
+        hex: '#5a3a26',
         images: [
-          img('cabinet-color1-front', '[SAMPLE] Cabinet – color 1 – front'),
-          img('cabinet-color1-detail', '[SAMPLE] Cabinet – color 1 – detail'),
-        ],
-      },
-      {
-        id: 'color-2',
-        name: '[SAMPLE] color 2',
-        hex: '#5c4030',
-        images: [
-          img('cabinet-color2-front', '[SAMPLE] Cabinet – color 2 – front'),
-          img('cabinet-color2-detail', '[SAMPLE] Cabinet – color 2 – detail'),
+          img('cabinet-front', 'Cabinet, front view'),
+          cabinetAngle,
+          cabinetStyled,
+          img('cabinet-side', 'Cabinet, side view'),
+          img('cabinet-views', 'Cabinet from several angles, with a close-up of the drawer inlay'),
+          img('cabinet-dimensions', `Cabinet dimensions diagram. ${CABINET_DIMENSIONS_TEXT}`),
+          assemblyImages.cabinet,
         ],
       },
     ],
@@ -137,7 +152,7 @@ export const products: Product[] = [
       { title: '[SAMPLE] Point 4 title', text: '[SAMPLE] One sentence for point 4.' },
       { title: '[SAMPLE] Point 5 title', text: '[SAMPLE] One sentence for point 5.' },
     ],
-    openImage: img('cabinet-open', '[SAMPLE] Cabinet – doors open'),
+    doorImages: { closed: cabinetAngle, open: cabinetStyled },
     frontClearanceCm: 40,
     isPlaceholder: true,
   },
@@ -154,21 +169,16 @@ export const products: Product[] = [
     finish: '[SAMPLE] finish',
     colors: [
       {
-        id: 'color-1',
-        name: '[SAMPLE] color 1',
-        hex: '#a07a55',
+        id: 'walnut',
+        name: 'Walnut',
+        hex: '#5a3a26',
         images: [
-          img('shelf-color1-front', '[SAMPLE] Shelf – color 1 – front'),
-          img('shelf-color1-detail', '[SAMPLE] Shelf – color 1 – detail'),
-        ],
-      },
-      {
-        id: 'color-2',
-        name: '[SAMPLE] color 2',
-        hex: '#5c4030',
-        images: [
-          img('shelf-color2-front', '[SAMPLE] Shelf – color 2 – front'),
-          img('shelf-color2-detail', '[SAMPLE] Shelf – color 2 – detail'),
+          img('shelf-front', 'Corner shelf, front view'),
+          img('shelf-styled', 'Corner shelf styled with books and decor'),
+          img('shelf-side', 'Corner shelf, side view'),
+          img('shelf-views', 'Corner shelf from several angles, with a top view and a close-up of the inlay'),
+          img('shelf-dimensions', `Corner shelf dimensions diagram. ${SHELF_DIMENSIONS_TEXT}`),
+          assemblyImages.shelf,
         ],
       },
     ],
