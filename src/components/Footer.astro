@@ -9,10 +9,12 @@ const year = new Date().getFullYear();
   <div class="container inner">
     <div class="brand">
       <a href="/" class="logo">Woody</a>
-      <p class="note">Chỉ để xem trước, không bán hàng.</p>
-      <!-- TODO: contact info (email / Zalo / Facebook) not provided yet -->
+      <p class="note">{site.footer.note}</p>
+      <p class="note">{site.footer.delivery}</p>
+      <p class="note">{site.footer.renderings}</p>
+      <!-- TODO: contact email not provided yet -->
     </div>
-    <nav aria-label="Điều hướng chân trang">
+    <nav aria-label={site.footer.navLabel}>
       <ul>
         {links.map((link) => (
           <li><a href={link.href}>{link.label}</a></li>
@@ -56,6 +58,10 @@ const year = new Date().getFullYear();
 
   .note {
     margin-top: var(--space-1);
+  }
+
+  .note + .note {
+    margin-top: 0;
   }
 
   ul {

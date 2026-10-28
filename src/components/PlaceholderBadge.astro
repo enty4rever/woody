@@ -1,5 +1,5 @@
 ---
-// Shows "DỮ LIỆU MẪU" in the top-right corner when a product holds sample data.
+// Shows "SAMPLE DATA" in the top-right corner when a product holds sample data.
 // The parent element must have position: relative.
 interface Props {
   isPlaceholder: boolean;
@@ -10,7 +10,7 @@ const { isPlaceholder } = Astro.props;
 
 {isPlaceholder && (
   <div class="placeholder-badge" role="note">
-    <span>Dữ liệu mẫu</span>
+    <span>Sample data</span>
   </div>
 )}
 

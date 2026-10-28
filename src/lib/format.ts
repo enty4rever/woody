@@ -1,4 +1,4 @@
-const vnd = new Intl.NumberFormat('vi-VN');
+const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-/** 6500000 → "6.500.000 ₫" (non-breaking space so ₫ never wraps alone). */
-export const formatVnd = (amount: number): string => `${vnd.format(amount)} ₫`;
+/** 249.99 → "$249.99". */
+export const formatUsd = (amount: number): string => usd.format(amount);

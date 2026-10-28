@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="Tủ – màu 2 – mặt trước (ảnh tạm)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="Cabinet – color 2 – front (placeholder)">
   <rect width="800" height="1000" fill="#efe6d8"/>
   <rect x="12" y="12" width="776" height="976" fill="none" stroke="#ddd0be" stroke-width="8"/>
   <path d="M16 16 L784 984 M784 16 L16 984" stroke="#ddd0be" stroke-width="4"/>
   <rect x="100" y="430" width="600" height="140" rx="8" fill="#f7f2ea" stroke="#ddd0be" stroke-width="2"/>
-  <text x="400" y="505" text-anchor="middle" font-family="system-ui, 'Segoe UI', sans-serif" font-size="40" font-weight="600" fill="#6b5a4b">Tủ – màu 2 – mặt trước</text>
-  <text x="400" y="548" text-anchor="middle" font-family="system-ui, 'Segoe UI', sans-serif" font-size="22" letter-spacing="4" fill="#6b5a4b">DỮ LIỆU MẪU · 4:5</text>
+  <text x="400" y="505" text-anchor="middle" font-family="system-ui, 'Segoe UI', sans-serif" font-size="40" font-weight="600" fill="#6b5a4b">Cabinet – color 2 – front</text>
+  <text x="400" y="548" text-anchor="middle" font-family="system-ui, 'Segoe UI', sans-serif" font-size="22" letter-spacing="4" fill="#6b5a4b">SAMPLE DATA · 4:5</text>
 </svg>

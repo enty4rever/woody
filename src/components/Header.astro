@@ -18,7 +18,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     >
       {site.header.menuLabel}
     </button>
-    <nav id="site-nav" aria-label="Điều hướng chính">
+    <nav id="site-nav" aria-label={site.header.navLabel}>
       <ul>
         {links.map((link) => (
           <li>

@@ -3,7 +3,8 @@
 // hidden from Tab and screen readers so the name and button are the only announced links.
 import type { Product } from '../data/products';
 import { site } from '../data/site';
-import { formatVnd } from '../lib/format';
+import { formatUsd } from '../lib/format';
+import { formatDimensions } from '../lib/units';
 import PlaceholderBadge from './PlaceholderBadge.astro';
 
 interface Props {
@@ -24,7 +25,8 @@ const image = product.colors[0]?.images[0];
     <p class="eyebrow">{site.home.productTypeLabel[product.type]}</p>
     <h3 class="name"><a href={href}>{product.name}</a></h3>
     <p class="line">{product.shortLine}</p>
-    <p class="price">{formatVnd(product.priceVnd)}</p>
+    <p class="price">{formatUsd(product.priceUsd)}</p>
+    <p class="size">{formatDimensions(product.dimensionsCm)}</p>
     <a href={href} class="btn btn-outline" aria-label={`${site.home.productCta}: ${product.name}`}>
       {site.home.productCta}
     </a>
@@ -85,6 +87,12 @@ const image = product.colors[0]?.images[0];
     color: var(--color-accent);
     font-size: var(--text-lg);
     font-weight: 600;
+  }
+
+  .size {
+    margin-top: calc(-1 * var(--space-1));
+    color: var(--color-muted);
+    font-size: var(--text-sm);
   }
 
   .btn {

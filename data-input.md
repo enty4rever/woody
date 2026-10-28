@@ -1,24 +1,28 @@
 # Số liệu thật cho 2 sản phẩm
 
 Điền vào chỗ `___`, rồi gửi lại cho Claude. Thứ tự giống hệt interface `Product` trong `src/data/products.ts`.
-Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[MẪU]` và đặt `isPlaceholder: false`. Lúc đó `npm run build` mới chạy được.
+Thị trường: chỉ Mỹ. **Mọi câu chữ sản phẩm (tên, mô tả, màu, bảo quản, FAQ) viết bằng tiếng Anh Mỹ.**
+Đơn vị: giá bằng **USD** (có cent, vd `649.99`). Kích thước nhập bằng **cm**, web tự đổi sang inch (làm tròn LÊN ¼ in). Cân nặng và tải trọng nhập bằng **kg**, web tự đổi sang lb (làm tròn LÊN).
+Ảnh sản phẩm là ảnh render; web luôn ghi rõ điều đó.
+
+Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đặt `isPlaceholder: false`. Lúc đó `npm run build` mới chạy được.
 
 Ảnh: WebP, cạnh dài tối đa 2000 px, đặt tên kiểu `cabinet-oak-front.webp`, `shelf-walnut-detail.webp`. Mỗi sản phẩm 4–8 ảnh, nếu được thì có ảnh cho từng màu.
 
 ---
 
-## 1. Tủ gỗ (slug: `tu-go`)
+## 1. Tủ gỗ (slug: `wood-cabinet`)
 
 | # | Field | Đơn vị | Giá trị |
 |---|---|---|---|
-| 1 | Tên (`name`) | | ___ |
-| 2 | Mô tả ngắn, 1 câu (`shortLine`) | | ___ |
-| 3 | Giá đề xuất (`priceVnd`) | VNĐ | ___ |
-| 4 | Kích thước ngoài: Rộng (`dimensionsCm.width`) | cm | ___ |
-| 5 | Kích thước ngoài: Sâu (`dimensionsCm.depth`) | cm | ___ |
-| 6 | Kích thước ngoài: Cao (`dimensionsCm.height`) | cm | ___ |
-| 7 | Cân nặng (`weightKg`) | kg | ___ |
-| 8 | Tải trọng tối đa mỗi kệ (`maxLoadPerShelfKg`) | kg/kệ | ___ |
+| 1 | Tên, tiếng Anh (`name`) | | ___ |
+| 2 | Mô tả ngắn, 1 câu tiếng Anh (`shortLine`) | | ___ |
+| 3 | Giá đề xuất (`priceUsd`) | USD | ___ |
+| 4 | Kích thước ngoài: Rộng (`dimensionsCm.width`) | cm (web đổi sang in) | ___ |
+| 5 | Kích thước ngoài: Sâu (`dimensionsCm.depth`) | cm (web đổi sang in) | ___ |
+| 6 | Kích thước ngoài: Cao (`dimensionsCm.height`) | cm (web đổi sang in) | ___ |
+| 7 | Cân nặng (`weightKg`) | kg (web đổi sang lb) | ___ |
+| 8 | Tải trọng tối đa mỗi kệ (`maxLoadPerShelfKg`) | kg/kệ (web đổi sang lb) | ___ |
 | 9 | Loại gỗ (`woodType`) | | ___ |
 | 10 | Hoàn thiện (`finish`) | | ___ |
 | 11 | Màu: xem bảng màu bên dưới (`colors`) | | |
@@ -30,43 +34,43 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[MẪU]` và đặ
 | 17 | Bảo quản: xem bên dưới (`care`) | | |
 | 18 | FAQ: xem bên dưới (`faq`) | | |
 | 19 | Ảnh mở cửa (`openImage`) | tên file | ___ |
-| 20 | Khoảng trống cần phía trước để mở cửa (`doorClearanceCm`) | cm | ___ |
+| 20 | Khoảng trống cần phía trước để mở cửa (`doorClearanceCm`) | cm (web đổi sang in) | ___ |
 
 **Màu** (thêm dòng nếu có nhiều màu):
 
-| Tên màu | Mã màu cho ô chọn (hex, nếu có) | Tên file ảnh của màu này |
+| Tên màu (tiếng Anh) | Mã màu cho ô chọn (hex, nếu có) | Tên file ảnh của màu này |
 |---|---|---|
 | ___ | ___ | ___, ___ |
 | ___ | ___ | ___, ___ |
 
-**Bảo quản** (3–4 dòng):
+**Bảo quản** (3–4 dòng, tiếng Anh):
 1. ___
 2. ___
 3. ___
 4. ___
 
-**FAQ** (5–6 câu):
-1. Hỏi: ___ / Đáp: ___
-2. Hỏi: ___ / Đáp: ___
-3. Hỏi: ___ / Đáp: ___
-4. Hỏi: ___ / Đáp: ___
-5. Hỏi: ___ / Đáp: ___
-6. Hỏi: ___ / Đáp: ___
+**FAQ** (5–6 câu, tiếng Anh):
+1. Q: ___ / A: ___
+2. Q: ___ / A: ___
+3. Q: ___ / A: ___
+4. Q: ___ / A: ___
+5. Q: ___ / A: ___
+6. Q: ___ / A: ___
 
 ---
 
-## 2. Kệ gỗ (slug: `ke-go`)
+## 2. Kệ gỗ (slug: `wood-shelf`)
 
 | # | Field | Đơn vị | Giá trị |
 |---|---|---|---|
-| 1 | Tên (`name`) | | ___ |
-| 2 | Mô tả ngắn, 1 câu (`shortLine`) | | ___ |
-| 3 | Giá đề xuất (`priceVnd`) | VNĐ | ___ |
-| 4 | Kích thước ngoài: Rộng (`dimensionsCm.width`) | cm | ___ |
-| 5 | Kích thước ngoài: Sâu (`dimensionsCm.depth`) | cm | ___ |
-| 6 | Kích thước ngoài: Cao (`dimensionsCm.height`) | cm | ___ |
-| 7 | Cân nặng (`weightKg`) | kg | ___ |
-| 8 | Tải trọng tối đa mỗi kệ (`maxLoadPerShelfKg`) | kg/kệ | ___ |
+| 1 | Tên, tiếng Anh (`name`) | | ___ |
+| 2 | Mô tả ngắn, 1 câu tiếng Anh (`shortLine`) | | ___ |
+| 3 | Giá đề xuất (`priceUsd`) | USD | ___ |
+| 4 | Kích thước ngoài: Rộng (`dimensionsCm.width`) | cm (web đổi sang in) | ___ |
+| 5 | Kích thước ngoài: Sâu (`dimensionsCm.depth`) | cm (web đổi sang in) | ___ |
+| 6 | Kích thước ngoài: Cao (`dimensionsCm.height`) | cm (web đổi sang in) | ___ |
+| 7 | Cân nặng (`weightKg`) | kg (web đổi sang lb) | ___ |
+| 8 | Tải trọng tối đa mỗi kệ (`maxLoadPerShelfKg`) | kg/kệ (web đổi sang lb) | ___ |
 | 9 | Loại gỗ (`woodType`) | | ___ |
 | 10 | Hoàn thiện (`finish`) | | ___ |
 | 11 | Màu: xem bảng màu bên dưới (`colors`) | | |
@@ -80,21 +84,21 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[MẪU]` và đặ
 
 **Màu** (thêm dòng nếu có nhiều màu):
 
-| Tên màu | Mã màu cho ô chọn (hex, nếu có) | Tên file ảnh của màu này |
+| Tên màu (tiếng Anh) | Mã màu cho ô chọn (hex, nếu có) | Tên file ảnh của màu này |
 |---|---|---|
 | ___ | ___ | ___, ___ |
 | ___ | ___ | ___, ___ |
 
-**Bảo quản** (3–4 dòng):
+**Bảo quản** (3–4 dòng, tiếng Anh):
 1. ___
 2. ___
 3. ___
 4. ___
 
-**FAQ** (5–6 câu):
-1. Hỏi: ___ / Đáp: ___
-2. Hỏi: ___ / Đáp: ___
-3. Hỏi: ___ / Đáp: ___
-4. Hỏi: ___ / Đáp: ___
-5. Hỏi: ___ / Đáp: ___
-6. Hỏi: ___ / Đáp: ___
+**FAQ** (5–6 câu, tiếng Anh):
+1. Q: ___ / A: ___
+2. Q: ___ / A: ___
+3. Q: ___ / A: ___
+4. Q: ___ / A: ___
+5. Q: ___ / A: ___
+6. Q: ___ / A: ___

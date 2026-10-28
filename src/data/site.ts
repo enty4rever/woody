@@ -10,60 +10,67 @@ export interface SiteLink {
 export const site = {
   /** True while the copy below holds sample text. The production build refuses to run. */
   isPlaceholder: true,
-  announcement: 'Bản xem trước · Chưa nhận đặt hàng.',
+  announcement: 'Collection preview · Not taking orders yet.',
   header: {
     menuLabel: 'Menu',
+    navLabel: 'Main navigation',
+  },
+  footer: {
+    note: 'Preview only. Nothing is for sale.',
+    delivery: 'Planned delivery: United States only.',
+    renderings: 'Product images are renderings.',
+    navLabel: 'Footer navigation',
   },
   /** Shared by header and footer. footerOnly links are left out of the header. */
   nav: [
-    { href: '/collection', label: 'Bộ sưu tập' },
-    { href: '/our-story', label: 'Câu chuyện' },
-    { href: '/fit-and-care', label: 'Đo & bảo quản' },
-    { href: '/policies', label: 'Chính sách', footerOnly: true },
-    { href: '/contact', label: 'Liên hệ' },
+    { href: '/collection', label: 'Collection' },
+    { href: '/our-story', label: 'Our Story' },
+    { href: '/fit-and-care', label: 'Fit & Care' },
+    { href: '/policies', label: 'Policies', footerOnly: true },
+    { href: '/contact', label: 'Contact' },
   ] as (SiteLink & { footerOnly?: boolean })[],
   home: {
     meta: {
-      title: '[MẪU] Woody | Tủ và kệ gỗ',
-      description: '[MẪU] Mô tả trang',
+      title: '[SAMPLE] Woody | Wood cabinet and shelf',
+      description: '[SAMPLE] Page description',
     },
     hero: {
-      eyebrow: '[MẪU] Bộ sưu tập xem trước',
-      title: '[MẪU] Tiêu đề chính của trang chủ',
+      eyebrow: '[SAMPLE] Collection preview',
+      title: '[SAMPLE] Main home page headline',
       intro:
-        '[MẪU] Hai đến ba dòng giới thiệu thương hiệu và hai sản phẩm gỗ. Nói ngắn gọn sản phẩm là gì, làm từ gì và dành cho ai.',
+        '[SAMPLE] Two to three lines introducing the brand and its two wood pieces. Say briefly what they are, what they are made of and who they are for.',
       image: {
         src: '/images/placeholder/cabinet-open.svg',
-        alt: '[MẪU] Tủ gỗ mở cửa',
+        alt: '[SAMPLE] Wood cabinet with doors open',
         width: 800,
         height: 1000,
       },
-      primary: { label: 'Xem bộ sưu tập', href: '/collection' } as SiteLink,
-      secondary: { label: 'Cách đo không gian', href: '/fit-and-care' } as SiteLink,
+      primary: { label: 'Explore the collection', href: '/collection' } as SiteLink,
+      secondary: { label: 'How to measure', href: '/fit-and-care' } as SiteLink,
     },
     products: {
-      eyebrow: '[MẪU] Sản phẩm',
-      title: '[MẪU] Hai món, một bộ',
+      eyebrow: '[SAMPLE] Products',
+      title: '[SAMPLE] Two pieces, one set',
     },
     /** Eyebrow on each product card, by product.type. */
     productTypeLabel: {
-      cabinet: '[MẪU] Tủ',
-      shelf: '[MẪU] Kệ',
+      cabinet: '[SAMPLE] Cabinet',
+      shelf: '[SAMPLE] Shelf',
     },
-    productCta: 'Xem chi tiết',
+    productCta: 'View details',
     steps: {
-      eyebrow: '[MẪU] Trước khi chọn',
-      title: 'Chọn đúng ngay từ đầu',
+      eyebrow: '[SAMPLE] Before you choose',
+      title: 'Choose with confidence',
       items: [
-        { title: 'Đo không gian', text: '[MẪU] Mô tả ngắn cách đo rộng, sâu, cao của chỗ đặt.' },
-        { title: 'Chừa chỗ mở cửa', text: '[MẪU] Mô tả ngắn khoảng trống cần để mở cửa tủ.' },
-        { title: 'Lên phương án lắp', text: '[MẪU] Mô tả ngắn cách đặt đứng hoặc cố định vào tường.' },
+        { title: 'Measure your space', text: '[SAMPLE] Short note on measuring the width, depth and height of the spot.' },
+        { title: 'Check door clearance', text: '[SAMPLE] Short note on the space needed to open the cabinet doors.' },
+        { title: 'Plan your setup', text: '[SAMPLE] Short note on free-standing or anchoring to the wall.' },
       ],
     },
     story: {
-      quote: '[MẪU] Một câu trích từ câu chuyện thương hiệu.',
-      cite: '[MẪU] Người sáng lập',
-      link: { label: 'Đọc câu chuyện', href: '/our-story' } as SiteLink,
+      quote: '[SAMPLE] One line quoted from the brand story.',
+      cite: '[SAMPLE] Founder',
+      link: { label: 'Read our story', href: '/our-story' } as SiteLink,
     },
   },
 };

@@ -12,7 +12,8 @@ Do not copy its text, logo, product names or layout pixel for pixel. Take the id
 
 | Topic | Choice | Why |
 |---|---|---|
-| Framework | **Astro** (static output) | 2 products, no backend. Astro ships plain HTML with almost no JS and gives real URLs (`/products/tu-go`), not `#/` hash routes. |
+| Market | **US only** | Customers and delivery are in the United States only. Copy in US English (`lang="en"`), prices in USD (`$249.99`). |
+| Framework | **Astro** (static output) | 2 products, no backend. Astro ships plain HTML with almost no JS and gives real URLs (`/products/wood-cabinet`), not `#/` hash routes. |
 | Styling | Plain CSS with design tokens in `src/styles/tokens.css` | Small site, full control, no class soup. |
 | Product data | One file: `src/data/products.ts` | Every page reads from it. Change a price once, it updates everywhere. |
 | Interactivity | Small vanilla `<script>` blocks inside Astro components | Only 4 things move: gallery, color swatch, unit toggle, fit checker. |
@@ -28,11 +29,11 @@ Claude Code cannot invent these well. Prepare them first.
 
 - [ ] Brand name, tagline (1 line), logo (SVG or PNG with transparent background)
 - [ ] 2–3 brand colors (or let Claude propose one palette, then lock it)
-- [ ] Site language: Vietnamese, English, or both
-- [ ] Unit: cm (default) with optional inch toggle
+- [x] Site language: US English
+- [x] Units: inch / lb shown by default, cm toggle on the product page. Data is stored in cm / kg and converted (rounded up, never understated).
 - [ ] For EACH product (wooden cabinet, wooden shelf):
-  - name, short line (1 sentence), price (proposed)
-  - exterior W × D × H, weight, max load per shelf
+  - name, short line (1 sentence), price (proposed, USD with cents), all in English
+  - exterior W × D × H in cm, weight and max load per shelf in kg (the site shows inches / lb)
   - wood type, finish, available colors
   - number of doors / shelves / compartments
   - setup: free-standing or wall-mounted, anti-tip kit yes/no
@@ -40,7 +41,7 @@ Claude Code cannot invent these well. Prepare them first.
   - 5–6 FAQ items
   - photos: 4–8 per product, one per color if possible, one "door open" shot for the cabinet
 - [ ] Our Story text (150–300 words, written by you)
-- [ ] Contact: email / Zalo / Facebook page
+- [ ] Contact: email only
 
 Photos: export to WebP, max 2000 px on the long side, name them `cabinet-oak-front.webp`, `shelf-walnut-detail.webp`, and so on.
 
@@ -50,7 +51,8 @@ Photos: export to WebP, max 2000 px on the long side, name them `cabinet-oak-fro
 
 ```
 src/
-  data/products.ts          # all product facts
+  data/products.ts          # all product facts (cm, kg, USD)
+  lib/units.ts              # cm → in (¼ in, rounded up), kg → lb
   styles/tokens.css         # colors, fonts, spacing, radius
   styles/global.css
   layouts/Base.astro        # <head>, announcement bar, header, footer
@@ -59,7 +61,7 @@ src/
     ProductCard.astro
     Gallery.astro           # thumbnails + main image + arrows
     ColorSwatch.astro       # switches gallery set
-    SpecTable.astro         # cm/inch toggle
+    SpecTable.astro         # inch/cm toggle (inch default)
     FitChecker.astro        # user enters space, compares with product
     FeatureList.astro       # numbered "why it works"
     Faq.astro               # <details>/<summary>, no JS
@@ -84,7 +86,7 @@ public/images/...
 - `npm create astro@latest` (empty template, TypeScript strict)
 - Google Fonts: one serif for headings, one sans for body (pick a pair, not Instrument Serif + Manrope, to avoid looking like a clone)
 - `tokens.css`: background, surface, text, muted text, accent, border; spacing scale; radius
-- `Base.astro` with announcement bar: "Collection preview. Not available for order yet."
+- `Base.astro` with announcement bar: "Collection preview · Not taking orders yet."
 - **Done when:** blank home page renders with header and footer at 375 px and 1280 px.
 
 ### Phase 2 — Product data
@@ -100,27 +102,31 @@ Sections in order:
 4. Story teaser: one quote + link
 - **Done when:** looks good on mobile first, then desktop.
 
+### Phase 3.5 — US market (done)
+English copy, `[SAMPLE]` marker, `priceUsd` + `formatUsd`, `src/lib/units.ts` (inch/lb default), slugs `wood-cabinet` / `wood-shelf`, footer: "Planned delivery: United States only." and "Product images are renderings."
+
 ### Phase 4 — Product page (most work)
 1. Breadcrumb
 2. Gallery (thumbnails, arrows, keyboard support, swipe on mobile)
-3. Info: eyebrow, name, short line, price + "proposed retail price"
+3. Info: eyebrow, name, short line, price in USD + "proposed retail price"
 4. Color swatch → switches gallery images
 5. Key-facts bullets (4 lines)
 6. CTA: "Get notified" → contact page (no cart)
 7. Open/closed photo toggle (cabinet only)
 8. "Why it works": 4–5 numbered points tied to how it is built
-9. Dimensions: big W/D/H numbers + full spec table, cm ⇄ inch toggle
-10. Fit checker: user types W, D, H of their space → each dimension shows "fits / too small by X cm"; include door clearance for the cabinet
+9. Dimensions: big W/D/H numbers in inches + full spec table (in / lb). **Phase 4b:** in ⇄ cm toggle
+10. Fit checker: user types W, D, H of their space in inches (cm once 4b lands) → each dimension shows "fits / too small by X in"; include door clearance for the cabinet
 11. Care (4 tiles)
 12. FAQ
 13. Cross-sell to the other product
 - **Done when:** both product pages work and the fit checker gives correct results for 3 test cases (fits, too narrow, too shallow).
 
 ### Phase 5 — Other pages
-Collection, Our Story, Fit & Care (how to measure, with a simple SVG diagram), Policies (state clearly: preview only, no orders, no payment, images may be renderings), Contact, 404.
+Collection, Our Story, Fit & Care (how to measure, with a simple SVG diagram), Policies (state clearly: preview only, no orders, no payment, planned delivery US only, product images are renderings), Contact (email only), 404.
 
 ### Phase 6 — Polish
 - Responsive check at 375 / 768 / 1280 px
+- Copy check: US English spelling, USD prices, inches first
 - Accessibility: alt text on every image, focus states, labels on fit-checker inputs, color contrast
 - SEO: `<title>` and meta description per page, Open Graph image, favicon
 - Lighthouse ≥ 90 on all four scores
@@ -141,4 +147,6 @@ Collection, Our Story, Fit & Care (how to measure, with a simple SVG diagram), P
 - Mobile first. Test at 375 px and 1280 px before saying a phase is done.
 - Do only the phase I ask for. List what you changed at the end.
 - Do not invent product specs. If data is missing, leave a TODO and tell me.
+- Market: US only. Copy in US English. Prices in USD. Store dimensions in cm/kg, display inches/lb by default.
+- All product images are renderings. Always label them as such.
 ```

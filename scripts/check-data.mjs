@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const markers = ['[MẪU]', 'TODO'];
+const markers = ['[SAMPLE]', 'TODO'];
 const files = ['src/data/products.ts', 'src/data/site.ts'].map((rel) => ({
   rel,
   path: fileURLToPath(new URL(`../${rel}`, import.meta.url)),
@@ -17,7 +17,7 @@ for (const { rel, path } of files) {
     .forEach((line, i) => {
       for (const marker of markers) {
         if (line.includes(marker)) {
-          problems.push(`${rel}:${i + 1}  có "${marker}"  →  ${line.trim()}`);
+          problems.push(`${rel}:${i + 1}  has "${marker}"  →  ${line.trim()}`);
         }
       }
     });
@@ -28,24 +28,24 @@ const [productsFile, siteFile] = files;
 const { products } = await import(pathToFileURL(productsFile.path).href);
 for (const p of products) {
   if (p.isPlaceholder) {
-    problems.push(`Sản phẩm "${p.slug}" vẫn là isPlaceholder: true`);
+    problems.push(`Product "${p.slug}" is still isPlaceholder: true`);
   }
 }
 
 const { site } = await import(pathToFileURL(siteFile.path).href);
 if (site.isPlaceholder) {
-  problems.push(`${siteFile.rel} vẫn là isPlaceholder: true`);
+  problems.push(`${siteFile.rel} is still isPlaceholder: true`);
 }
 
 if (problems.length > 0) {
-  console.error('\n✖ Build bị chặn: còn dữ liệu mẫu trong products.ts / site.ts.\n');
+  console.error('\n✖ Build blocked: products.ts / site.ts still hold sample data.\n');
   for (const msg of problems) console.error('  - ' + msg);
   console.error(
-    `\n  ${problems.length} vấn đề. Điền số liệu và câu chữ thật (xem data-input.md), bỏ "[MẪU]"/"TODO"` +
-      ' và đặt isPlaceholder: false.' +
-      '\n  Chỉ để xem thử local: npm run build:preview\n',
+    `\n  ${problems.length} problem(s). Fill in real data and copy (see data-input.md), remove "[SAMPLE]"/"TODO"` +
+      ' and set isPlaceholder: false.' +
+      '\n  Local preview only: npm run build:preview\n',
   );
   process.exit(1);
 }
 
-console.log('✔ check-data: không còn dữ liệu mẫu.');
+console.log('✔ check-data: no sample data left.');
