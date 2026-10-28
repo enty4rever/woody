@@ -1,12 +1,7 @@
 ---
-const links = [
-  { href: '/collection', label: 'Bộ sưu tập' },
-  { href: '/our-story', label: 'Câu chuyện' },
-  { href: '/fit-and-care', label: 'Đo & bảo quản' },
-  { href: '/policies', label: 'Chính sách' },
-  { href: '/contact', label: 'Liên hệ' },
-];
+import { site } from '../data/site';
 
+const links = site.nav;
 const year = new Date().getFullYear();
 ---
 

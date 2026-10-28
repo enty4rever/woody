@@ -10,9 +10,18 @@ export interface SiteLink {
 export const site = {
   /** True while the copy below holds sample text. The production build refuses to run. */
   isPlaceholder: true,
+  announcement: 'Bản xem trước · Chưa nhận đặt hàng.',
   header: {
     menuLabel: 'Menu',
   },
+  /** Shared by header and footer. footerOnly links are left out of the header. */
+  nav: [
+    { href: '/collection', label: 'Bộ sưu tập' },
+    { href: '/our-story', label: 'Câu chuyện' },
+    { href: '/fit-and-care', label: 'Đo & bảo quản' },
+    { href: '/policies', label: 'Chính sách', footerOnly: true },
+    { href: '/contact', label: 'Liên hệ' },
+  ] as (SiteLink & { footerOnly?: boolean })[],
   home: {
     meta: {
       title: '[MẪU] Woody | Tủ và kệ gỗ',

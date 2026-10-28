@@ -1,12 +1,7 @@
 ---
 import { site } from '../data/site';
 
-const links = [
-  { href: '/collection', label: 'Bộ sưu tập' },
-  { href: '/our-story', label: 'Câu chuyện' },
-  { href: '/fit-and-care', label: 'Đo & bảo quản' },
-  { href: '/contact', label: 'Liên hệ' },
-];
+const links = site.nav.filter((link) => !link.footerOnly);
 
 const current = Astro.url.pathname.replace(/\/$/, '');
 ---
@@ -44,8 +39,6 @@ const current = Astro.url.pathname.replace(/\/$/, '');
   const nav = header?.querySelector<HTMLElement>('#site-nav');
 
   if (header && toggle && nav) {
-    header.classList.add('js');
-
     const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
     const setOpen = (open: boolean) => {
       toggle.setAttribute('aria-expanded', String(open));
@@ -100,7 +93,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     cursor: pointer;
   }
 
-  .js .menu-toggle {
+  :global(html.js) .menu-toggle {
     display: inline-block;
   }
 
@@ -108,7 +101,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     flex-basis: 100%;
   }
 
-  .js:not(.is-open) nav {
+  :global(html.js) .site-header:not(.is-open) nav {
     display: none;
   }
 
@@ -143,12 +136,12 @@ const current = Astro.url.pathname.replace(/\/$/, '');
       padding-block: var(--space-5);
     }
 
-    .js .menu-toggle {
+    :global(html.js) .menu-toggle {
       display: none;
     }
 
     nav,
-    .js:not(.is-open) nav {
+    :global(html.js) .site-header:not(.is-open) nav {
       display: block;
       flex-basis: auto;
     }
