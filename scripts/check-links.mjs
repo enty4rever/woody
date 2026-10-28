@@ -1,6 +1,7 @@
 // Checks every internal link in the built site (dist/). Run by "npm test" after build:preview.
 // - href="/..." must point to a page or file that exists in dist/
-// - href="/page#id" also needs id="id" on that page
+// - href="/page#id" also needs id="id" on that page; href="#id" needs it on the same page
+// - /support#assembly, #anchor, #contact-support and #fit on every product page must exist
 // - no request may go to Google Fonts (the Privacy page says nothing loads from third parties)
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
@@ -49,6 +50,12 @@ for (const page of pages) {
   }
 
   for (const [, href] of source.matchAll(/\shref="([^"]*)"/g)) {
+    // Same-page link (e.g. Quick help's "#fit"): the id must be on this page.
+    if (href.startsWith('#') && href.length > 1) {
+      checked++;
+      if (!source.includes(`id="${href.slice(1)}"`)) problems.push(`${from}: ${href} → no id="${href.slice(1)}" on this page`);
+      continue;
+    }
     if (!href.startsWith('/') || href.startsWith('//')) continue;
     checked++;
     const [pathAndQuery, fragment] = href.split('#');
@@ -72,6 +79,19 @@ for (const file of files.filter((f) => /\.(css|js)$/.test(f))) {
 }
 
 if (!isFile(join(dist, '404.html'))) problems.push('dist/404.html is missing');
+
+// Targets that must exist even if no link points to them yet.
+const required = ['/support#assembly', '/support#anchor', '/support#contact-support'];
+for (const page of pages.filter((p) => /^products\/[^/]+\/index\.html$/.test(relative(dist, p).split(sep).join('/')))) {
+  required.push(`/${relative(dist, page).split(sep).slice(0, -1).join('/')}#fit`);
+}
+for (const target of required) {
+  const [pathname, fragment] = target.split('#');
+  const file = resolve(pathname);
+  if (!file) problems.push(`required page ${pathname} is missing`);
+  else if (!read(file).includes(`id="${fragment}"`)) problems.push(`required ${target} → no id="${fragment}"`);
+}
+if (!required.some((t) => t.startsWith('/products/'))) problems.push('no product pages found to check #fit');
 
 if (problems.length > 0) {
   console.error(`\n✖ check-links: ${problems.length} problem(s)\n`);

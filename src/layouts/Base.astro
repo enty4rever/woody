@@ -14,15 +14,18 @@ import '../styles/global.css';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import QuickHelp from '../components/QuickHelp.astro';
 import { site } from '../data/site';
 
 interface Props {
   /** Page name. The brand is appended: "<title> | <brand>". */
   title: string;
   description?: string;
+  /** Quick help button and dialog. Off on 404. */
+  quickHelp?: boolean;
 }
 
-const { title, description = site.home.meta.description } = Astro.props;
+const { title, description = site.home.meta.description, quickHelp = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -49,10 +52,11 @@ const { title, description = site.home.meta.description } = Astro.props;
   </head>
   <body>
     <AnnouncementBar />
-    <Header />
+    <Header quickHelp={quickHelp} />
     <main>
       <slot />
     </main>
     <Footer />
+    {quickHelp && <QuickHelp />}
   </body>
 </html>

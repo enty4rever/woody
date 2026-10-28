@@ -5,7 +5,7 @@ import { site } from '../data/site';
 const copy = site.notFound;
 ---
 
-<Base title={copy.meta.title} description={copy.meta.description}>
+<Base title={copy.meta.title} description={copy.meta.description} quickHelp={false}>
   <section class="container not-found">
     <h1>{copy.title}</h1>
     <p class="text">{copy.text}</p>

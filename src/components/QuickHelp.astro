@@ -1,0 +1,299 @@
+---
+// Button-only help: a native <dialog> with fixed questions, no free text, no outside service.
+// Answers only reuse strings from site.ts. Opened by every [data-quickhelp-open] button: the
+// floating one here (720px and up) and the icon in Header.astro (below 720px). Without JS
+// neither button shows. Nothing is stored.
+import { site, type SiteLink } from '../data/site';
+
+const copy = site.quickHelp;
+const support = site.support;
+const onProduct = Astro.url.pathname.startsWith('/products/');
+
+type Answer = { id: keyof typeof copy.questions; text?: string; links: SiteLink[] };
+
+const answers: Answer[] = [
+  {
+    id: 'fit',
+    links: [
+      onProduct
+        ? { label: site.product.fit.submit, href: '#fit' }
+        : { label: site.fitCare.measure.title, href: '/fit-and-care' },
+    ],
+  },
+  { id: 'order', text: site.announcement, links: [site.product.cta] },
+  { id: 'ship', text: site.footer.delivery, links: [] },
+  { id: 'assembly', links: [{ label: support.assembly.title, href: support.productLinks.assembly.href }] },
+  { id: 'care', links: [{ label: site.fitCare.title, href: '/fit-and-care' }] },
+  {
+    id: 'person',
+    links: [
+      { label: site.contact.title, href: '/contact' },
+      { label: support.contactSupport.title, href: `/support#${support.contactSupport.id}` },
+    ],
+  },
+];
+---
+
+<button type="button" class="btn btn-outline qh-float" aria-haspopup="dialog" data-quickhelp-open>
+  {copy.open}
+</button>
+
+<dialog class="qh" aria-labelledby="qh-title" data-quickhelp>
+  <div class="qh-head">
+    <h2 id="qh-title">{copy.title}</h2>
+    <button type="button" class="btn btn-outline qh-close" data-qh-close>{copy.close}</button>
+  </div>
+  <p class="qh-disclaimer">{copy.disclaimer}</p>
+
+  <ul class="qh-list" data-qh-list>
+    {answers.map(({ id }) => (
+      <li>
+        <button type="button" class="btn btn-outline qh-q" data-q={id}>{copy.questions[id]}</button>
+      </li>
+    ))}
+  </ul>
+
+  {answers.map(({ id, text, links }) => (
+    <div class="qh-answer" data-a={id} tabindex="-1" aria-labelledby={`qh-a-${id}`} role="group" hidden>
+      <h3 id={`qh-a-${id}`}>{copy.questions[id]}</h3>
+      {text && <p>{text}</p>}
+      {links.length > 0 && (
+        <ul class="qh-links">
+          {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+        </ul>
+      )}
+      <button type="button" class="btn btn-outline qh-back" data-qh-back>{copy.back}</button>
+    </div>
+  ))}
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('dialog[data-quickhelp]');
+  const list = dialog?.querySelector<HTMLElement>('[data-qh-list]');
+
+  if (dialog && list) {
+    const answers = [...dialog.querySelectorAll<HTMLElement>('[data-a]')];
+    const firstQuestion = list.querySelector<HTMLButtonElement>('[data-q]');
+    let trigger: HTMLElement | null = null;
+    let picked: HTMLButtonElement | null = null;
+    /** Set when a link closes the dialog: focus then goes to the link's target, not the trigger. */
+    let leftByLink = false;
+
+    const showList = () => {
+      answers.forEach((answer) => (answer.hidden = true));
+      list.hidden = false;
+    };
+
+    document.querySelectorAll<HTMLElement>('[data-quickhelp-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        trigger = button;
+        leftByLink = false;
+        showList();
+        dialog.showModal();
+        firstQuestion?.focus();
+      });
+    });
+
+    // Esc (native) and Close both end here.
+    dialog.addEventListener('close', () => {
+      if (!leftByLink) trigger?.focus();
+    });
+
+    dialog.addEventListener('click', (event) => {
+      const target = event.target as Element;
+
+      const question = target.closest<HTMLButtonElement>('[data-q]');
+      if (question) {
+        picked = question;
+        const answer = answers.find((a) => a.dataset.a === question.dataset.q);
+        if (!answer) return;
+        list.hidden = true;
+        answer.hidden = false;
+        answer.focus();
+        return;
+      }
+
+      if (target.closest('[data-qh-back]')) {
+        showList();
+        (picked ?? firstQuestion)?.focus();
+        return;
+      }
+
+      if (target.closest('[data-qh-close]')) {
+        dialog.close();
+        return;
+      }
+
+      // Links: other pages simply navigate. A link to this page (#fit, or /support#… on /support)
+      // closes the dialog, scrolls to the section and focuses it.
+      const link = target.closest<HTMLAnchorElement>('a[href]');
+      if (!link) return;
+      const url = new URL(link.href);
+      if (url.pathname !== location.pathname || !url.hash) return;
+      const section = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+      if (!section) return;
+      event.preventDefault();
+      leftByLink = true;
+      dialog.close();
+      history.pushState(null, '', url.hash);
+      if (!section.hasAttribute('tabindex')) section.setAttribute('tabindex', '-1');
+      section.scrollIntoView({ block: 'start' });
+      section.focus({ preventScroll: true });
+    });
+
+    // Back/forward cache: a page left through a dialog link comes back with the dialog closed,
+    // without moving focus to the trigger.
+    window.addEventListener('pageshow', (event) => {
+      if (!event.persisted || !dialog.open) return;
+      leftByLink = true;
+      dialog.close();
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
+  }
+</script>
+
+<style>
+  /* Floating button: 720px and up, JS only. Below 720px the header icon opens the dialog. */
+  .qh-float {
+    display: none;
+    position: fixed;
+    right: var(--space-5);
+    bottom: var(--space-5);
+    background: var(--color-bg);
+    box-shadow: 0 2px 8px rgb(43 29 20 / 0.15);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .qh-float:hover {
+    background: var(--color-bg);
+  }
+
+  @media (min-width: 720px) {
+    :global(html.js) .qh-float {
+      display: inline-block;
+    }
+  }
+
+  /* Mobile: sheet along the bottom edge. */
+  .qh {
+    position: fixed;
+    inset: auto var(--gutter) var(--gutter);
+    width: auto;
+    max-width: none;
+    max-height: 80vh;
+    max-height: 80dvh;
+    margin: 0;
+    padding: var(--space-5);
+    overflow: auto;
+    border: 1px solid var(--color-green);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    box-shadow: 0 8px 24px rgb(43 29 20 / 0.2);
+  }
+
+  .qh[open] {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .qh::backdrop {
+    background: rgb(43 29 20 / 0.3);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .qh[open] {
+      animation: qh-in 0.15s ease-out;
+    }
+
+    @keyframes qh-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+    }
+  }
+
+  .qh-head {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .qh h2 {
+    font-size: var(--text-xl);
+  }
+
+  .qh h3 {
+    font-size: var(--text-lg);
+  }
+
+  .qh button {
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .qh-close {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  .qh-disclaimer {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  .qh-list,
+  .qh-links {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .qh-list[hidden] {
+    display: none;
+  }
+
+  .qh-q {
+    width: 100%;
+    text-align: left;
+  }
+
+  .qh-answer:not([hidden]) {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+
+  .qh-answer:focus {
+    outline: none;
+  }
+
+  .qh-links a {
+    display: inline-block;
+    padding-block: var(--space-1);
+    font-weight: 500;
+  }
+
+  .qh-back {
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  /* 720px and up: panel in the bottom-right corner, above the floating button's spot. */
+  @media (min-width: 720px) {
+    .qh {
+      inset: auto var(--space-5) var(--space-5) auto;
+      width: 22rem;
+      max-height: calc(100vh - 2 * var(--space-5));
+      max-height: calc(100dvh - 2 * var(--space-5));
+    }
+  }
+</style>

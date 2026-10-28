@@ -1,6 +1,12 @@
 ---
 import { site } from '../data/site';
 
+interface Props {
+  /** Show the Quick help icon (below 720px). It opens the dialog in QuickHelp.astro. */
+  quickHelp?: boolean;
+}
+
+const { quickHelp = false } = Astro.props;
 const links = site.nav.filter((link) => !link.footerOnly);
 
 const current = Astro.url.pathname.replace(/\/$/, '');
@@ -10,6 +16,21 @@ const current = Astro.url.pathname.replace(/\/$/, '');
   <div class="container inner">
     <!-- TODO: replace text logo with SVG when available -->
     <a href="/" class="logo">{site.brand}</a>
+    {quickHelp && (
+      <button
+        type="button"
+        class="btn btn-outline qh-icon"
+        aria-label={site.quickHelp.open}
+        aria-haspopup="dialog"
+        data-quickhelp-open
+      >
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4 3.5V16H5.5A1.5 1.5 0 0 1 4 14.5z" />
+          <path d="M10 8.25a2 2 0 1 1 2.75 1.85c-.45.2-.75.62-.75 1.1v.3" />
+          <circle cx="12" cy="13.6" r="0.5" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    )}
     <button
       type="button"
       class="btn btn-outline menu-toggle"
@@ -97,6 +118,23 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     display: inline-block;
   }
 
+  /* Quick help icon (below 720px, JS only): in the flow, so it never covers page content */
+  .qh-icon {
+    display: none;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(html.js) .qh-icon {
+    display: inline-flex;
+  }
+
   nav {
     flex-basis: 100%;
   }
@@ -136,7 +174,8 @@ const current = Astro.url.pathname.replace(/\/$/, '');
       padding-block: var(--space-5);
     }
 
-    :global(html.js) .menu-toggle {
+    :global(html.js) .menu-toggle,
+    :global(html.js) .qh-icon {
       display: none;
     }
 

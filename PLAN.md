@@ -66,6 +66,7 @@ src/
     FeatureList.astro       # numbered "why it works"
     Faq.astro               # <details>/<summary>, no JS
     CrossSell.astro
+    QuickHelp.astro         # button-only help dialog (Phase 5.5)
   pages/
     index.astro
     collection.astro
@@ -74,6 +75,7 @@ src/
     fit-and-care.astro
     policies.astro
     contact.astro
+    support.astro           # assembly, anchoring, contact support (Phase 5.5)
     404.astro
 public/images/...
 ```
@@ -123,6 +125,13 @@ English copy, `[SAMPLE]` marker, `priceUsd` + `formatUsd`, `src/lib/units.ts` (i
 
 ### Phase 5 — Other pages
 Collection, Our Story, Fit & Care (how to measure, with a simple SVG diagram), Policies (state clearly: preview only, no orders, no payment, planned delivery US only, product images are renderings), Contact (email only), 404.
+
+### Phase 5.5 — Support
+- `/support` (footer nav only, header keeps 4 items): Assembly (`#assembly`, one `[SAMPLE]` line, no steps or parts list yet), Anchor it to the wall (`#anchor`, cabinet only, "included" line only if `antiTipKit: true`), Contact support (`#contact-support`: shared email with subject "Assembly help", demo phone line marked "Demo number, not in service.", planned hours)
+- Product page: "Assembly help" link near the spec table; cabinet also gets "How to anchor it"
+- `QuickHelp.astro`: native `<dialog>` with button-only questions, answers reuse site.ts strings, "Automated quick help, not a live person." Floating button from 720px, header icon below 720px (never covers the CTA or fit results). Not on 404, hidden without JS, no storage
+- No law names, no unconfirmed product traits, nothing loaded from third parties
+- `check-links` also checks same-page `#id` links and requires `/support#assembly`, `#anchor`, `#contact-support` and `#fit` on each product page
 
 ### Phase 6 — Polish
 - Responsive check at 375 / 768 / 1280 px

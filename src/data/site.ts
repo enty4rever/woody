@@ -38,6 +38,7 @@ export const site = {
     { href: '/fit-and-care', label: 'Fit & Care' },
     { href: '/policies', label: 'Policies', footerOnly: true },
     { href: '/contact', label: 'Contact' },
+    { href: '/support', label: 'Support', footerOnly: true },
   ] as (SiteLink & { footerOnly?: boolean })[],
   home: {
     meta: {
@@ -332,6 +333,62 @@ export const site = {
     email: 'hello@example.com', // [SAMPLE] replace with the real address
     subject: 'Notify me when orders open',
     note: '[SAMPLE] One sentence saying the email opens in your own mail app, with the subject filled in.',
+  },
+  support: {
+    meta: {
+      title: 'Support',
+      description: '[SAMPLE] Support page description',
+    },
+    title: 'Support',
+    intro: '[SAMPLE] One sentence on getting help with assembly and setup.',
+    // TODO: assembly steps and parts list will come with the first production run. No placeholders.
+    assembly: {
+      id: 'assembly',
+      title: 'Assembly',
+      text: '[SAMPLE] A visual assembly guide will ship with the first production run.',
+    },
+    /** Cabinet only. */
+    anchor: {
+      id: 'anchor',
+      title: 'Anchor it to the wall',
+      text: [
+        '[SAMPLE] We recommend anchoring the cabinet to the wall before you load the shelves.',
+        '[SAMPLE] Use the anti-tip kit to fix the top of the cabinet to the wall, and keep children from climbing on it.',
+      ],
+    },
+    contactSupport: {
+      id: 'contact-support',
+      title: 'Contact support',
+      emailLabel: 'Email',
+      /** Same address as the Contact page (site.contact.email). */
+      subject: 'Assembly help',
+      phoneLabel: 'Support line',
+      phone: '+1 (202) 555-0142',
+      phoneHref: 'tel:+12025550142',
+      phoneNote: 'Demo number, not in service.',
+      hours: 'Planned hours: Mon–Fri, 9 AM–5 PM ET',
+    },
+    /** Links on the product page, near the spec table. */
+    productLinks: {
+      assembly: { label: 'Assembly help', href: '/support#assembly' } as SiteLink,
+      anchor: { label: 'How to anchor it', href: '/support#anchor' } as SiteLink,
+    },
+  },
+  /** Button-only help dialog (QuickHelp.astro). Answers reuse strings from elsewhere in this file. */
+  quickHelp: {
+    open: 'Quick help',
+    title: 'Quick help',
+    disclaimer: 'Automated quick help, not a live person.',
+    close: 'Close',
+    back: 'Back to questions',
+    questions: {
+      fit: 'Will it fit?',
+      order: 'When can I order?',
+      ship: 'Do you ship to me?',
+      assembly: 'Assembly help',
+      care: 'How do I care for it?',
+      person: 'Talk to a person',
+    },
   },
   notFound: {
     meta: {

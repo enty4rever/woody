@@ -29,7 +29,8 @@ const templates = {
 };
 ---
 
-<section class="fit" id="fit" aria-labelledby="fit-title">
+<!-- tabindex="-1": Quick help's "Will it fit?" link focuses this section after scrolling -->
+<section class="fit" id="fit" tabindex="-1" aria-labelledby="fit-title">
   <header class="head">
     <p class="eyebrow">{copy.eyebrow}</p>
     <h2 id="fit-title">{copy.title}</h2>
@@ -180,6 +181,14 @@ const templates = {
 </script>
 
 <style>
+  .fit {
+    scroll-margin-top: var(--space-5);
+  }
+
+  .fit:focus {
+    outline: none;
+  }
+
   .head {
     display: grid;
     gap: var(--space-2);
