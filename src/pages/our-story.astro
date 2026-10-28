@@ -1,7 +1,11 @@
 ---
+import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import { site } from '../data/site';
+import { imageWidths } from '../lib/images';
+// A photo of the craft, not a product rendering: no "Rendering" tag.
+import inlayCraft from '../assets/story/inlay-craft.jpeg';
 
 const copy = site.ourStory;
 ---
@@ -12,7 +16,22 @@ const copy = site.ourStory;
 
     <article class="story">
       <h1>{copy.title}</h1>
-      {copy.paragraphs.map((text) => <p>{text}</p>)}
+      <div class="text">
+        {copy.paragraphs.map((text) => <p>{text}</p>)}
+      </div>
+      <figure class="photo">
+        <Picture
+          src={inlayCraft}
+          alt={copy.image.alt}
+          widths={imageWidths(inlayCraft.width, [480, 960])}
+          sizes="(min-width: 1200px) 470px, (min-width: 900px) 40vw, 100vw"
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>{copy.image.caption}</figcaption>
+      </figure>
       <figure class="quote">
         <blockquote>
           <p>{copy.quote}</p>
@@ -24,23 +43,61 @@ const copy = site.ourStory;
 </Base>
 
 <style>
+  /* Mobile: one column, photo after the text and before the quote */
   .story {
     display: grid;
+    grid-template-areas: 'title' 'text' 'photo' 'quote';
     gap: var(--space-4);
-    max-width: 40rem;
     padding-block: var(--space-4) var(--space-7);
   }
 
   .story h1 {
+    grid-area: title;
     margin-bottom: var(--space-2);
   }
 
-  .story > p {
+  .text {
+    grid-area: text;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .text p {
     font-size: var(--text-lg);
+  }
+
+  /* Justify only where lines are long enough to avoid big word gaps */
+  @media (min-width: 720px) {
+    .text p {
+      text-align: justify;
+      hyphens: auto;
+    }
+  }
+
+  .photo {
+    grid-area: photo;
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  /* Natural 3:2 ratio, no crop */
+  .photo :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+  }
+
+  .photo figcaption {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
   }
 
   /* Thin green rule = identity accent, no fill */
   .quote {
+    grid-area: quote;
     display: grid;
     gap: var(--space-3);
     margin-top: var(--space-5);
@@ -58,5 +115,25 @@ const copy = site.ourStory;
   .quote figcaption {
     color: var(--color-muted);
     font-size: var(--text-sm);
+  }
+
+  /* Desktop: text left (~58%), sticky photo right */
+  @media (min-width: 900px) {
+    .story {
+      grid-template-columns: 58fr 42fr;
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas:
+        'title photo'
+        'text  photo'
+        'quote photo';
+      column-gap: var(--space-7);
+      align-items: start;
+    }
+
+    .photo {
+      position: sticky;
+      top: var(--space-6);
+      margin-top: 0;
+    }
   }
 </style>

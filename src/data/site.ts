@@ -241,6 +241,11 @@ export const site = {
         'Both pieces go together without tools, with an English picture guide in the box.',
       'This site is a preview. We are not taking orders yet. If you would like to hear when we do, send us an email.',
     ],
+    /** Photo (not a rendering) in src/assets/story/, imported by the page. */
+    image: {
+      alt: 'Hands setting small pieces of mother-of-pearl into a carved wooden tabletop.',
+      caption: 'Mother-of-pearl inlay, set piece by piece by hand.',
+    },
     quote: 'An effortless touch of Vietnamese pearl inlay, bringing timeless elegance into your modern home.',
     cite: 'The Woody team',
   },
