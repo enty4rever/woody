@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container inner">
     <div class="brand">
-      <a href="/" class="logo">Woody</a>
+      <a href="/" class="logo">{site.brand}</a>
       <p class="note">{site.footer.note}</p>
       <p class="note">{site.footer.delivery}</p>
       <p class="note">{site.footer.renderings}</p>
@@ -23,7 +23,7 @@ const year = new Date().getFullYear();
     </nav>
   </div>
   <div class="container">
-    <p class="copy">© {year} Woody</p>
+    <p class="copy">© {year} {site.brand}</p>
   </div>
 </footer>
 

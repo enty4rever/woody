@@ -1,0 +1,36 @@
+---
+// Keeps the product info in view next to the gallery (from 900px), but only while the whole
+// block fits on screen. A taller block scrolls normally so its button is never cut off.
+// Without JS it never sticks.
+---
+
+<div class="sticky-info" data-sticky-info>
+  <slot />
+</div>
+
+<script>
+  /** Matches `top: var(--space-5)` below (24px), kept free above and below the block. */
+  const TOP = 24;
+  const wide = window.matchMedia('(min-width: 900px)');
+
+  document.querySelectorAll<HTMLElement>('[data-sticky-info]').forEach((el) => {
+    const update = () =>
+      el.classList.toggle('is-sticky', wide.matches && el.offsetHeight + TOP * 2 <= window.innerHeight);
+
+    new ResizeObserver(update).observe(el);
+    window.addEventListener('resize', update);
+    wide.addEventListener('change', update);
+    update();
+  });
+</script>
+
+<style>
+  .sticky-info {
+    min-width: 0;
+  }
+
+  .sticky-info.is-sticky {
+    position: sticky;
+    top: var(--space-5);
+  }
+</style>

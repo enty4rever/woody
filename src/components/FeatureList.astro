@@ -1,0 +1,80 @@
+---
+// Numbered points (01–05). Green numbers and rule = identity, no green fill.
+import type { ProductFeature } from '../data/products';
+
+interface Props {
+  features: ProductFeature[];
+  eyebrow: string;
+  title: string;
+}
+
+const { features, eyebrow, title } = Astro.props;
+const number = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<section class="features" aria-labelledby="features-title">
+  <header class="head">
+    <p class="eyebrow">{eyebrow}</p>
+    <h2 id="features-title">{title}</h2>
+  </header>
+  <ol>
+    {features.map((feature, i) => (
+      <li>
+        <span class="number" aria-hidden="true">{number(i)}</span>
+        <h3>{feature.title}</h3>
+        <p>{feature.text}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  ol {
+    display: grid;
+    gap: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding-top: var(--space-4);
+    border-top: 2px solid var(--color-green);
+  }
+
+  .number {
+    color: var(--color-green);
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+  }
+
+  p {
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 640px) {
+    ol {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    ol {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

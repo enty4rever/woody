@@ -1,0 +1,189 @@
+---
+// Product page, top half (Phase 4a). Every fact comes from products.ts, every label from site.ts.
+import Base from '../../layouts/Base.astro';
+import Gallery from '../../components/Gallery.astro';
+import ColorSwatch from '../../components/ColorSwatch.astro';
+import StickyInfo from '../../components/StickyInfo.astro';
+import DoorToggle from '../../components/DoorToggle.astro';
+import FeatureList from '../../components/FeatureList.astro';
+import { products, type Product } from '../../data/products';
+import { site } from '../../data/site';
+import { formatUsd } from '../../lib/format';
+import { formatDimensions, formatPounds } from '../../lib/units';
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const copy = site.product;
+const facts = copy.keyFacts;
+
+const keyFacts = [
+  formatDimensions(product.dimensionsCm),
+  `${facts.wood}: ${product.woodType}`,
+  facts.setup[product.setup],
+  facts.colors(product.colors.length),
+  `${facts.weight}: ${formatPounds(product.weightKg)}`,
+  ...(product.antiTipKit ? [facts.antiTip] : []),
+];
+---
+
+<Base title={product.name} description={copy.meta.description}>
+  <div class="container">
+    <nav class="breadcrumb" aria-label={copy.breadcrumb.label}>
+      <ol>
+        <li><a href={copy.breadcrumb.home.href}>{copy.breadcrumb.home.label}</a></li>
+        <li><a href={copy.breadcrumb.collection.href}>{copy.breadcrumb.collection.label}</a></li>
+        <li><span aria-current="page">{product.name}</span></li>
+      </ol>
+    </nav>
+
+    <div class="product-top">
+      <Gallery product={product} />
+
+      <StickyInfo>
+        <div class="info">
+          <p class="eyebrow">{site.home.productTypeLabel[product.type]}</p>
+          <h1>{product.name}</h1>
+          <p class="line">{product.shortLine}</p>
+          <p class="price">
+            <span class="amount">{formatUsd(product.priceUsd)}</span>
+            <span class="price-note">{copy.priceNote}</span>
+          </p>
+          <ColorSwatch product={product} />
+          <ul class="facts" aria-label={facts.label}>
+            {keyFacts.map((fact) => <li>{fact}</li>)}
+          </ul>
+          <a href={copy.cta.href} class="btn btn-primary cta">{copy.cta.label}</a>
+        </div>
+      </StickyInfo>
+    </div>
+
+    {product.openImage && (
+      <section class="block">
+        <DoorToggle product={product} />
+      </section>
+    )}
+
+    <div class="block">
+      <FeatureList features={product.features} eyebrow={copy.features.eyebrow} title={copy.features.title} />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    padding: 0;
+    padding-block: var(--space-4);
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .breadcrumb li + li::before {
+    content: '/' / '';
+    margin-right: var(--space-2);
+  }
+
+  /* Mobile: gallery on top, info below. From 900px: gallery ~55% left, info right. */
+  .product-top {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .info {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .info h1 {
+    font-size: var(--text-2xl);
+  }
+
+  .line {
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .price {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .amount {
+    color: var(--color-accent);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .price-note {
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4) 0 0;
+    border-top: 1px solid var(--color-border);
+    list-style: none;
+    font-size: var(--text-sm);
+    justify-self: stretch;
+  }
+
+  /* Green dot = identity icon */
+  .facts li {
+    position: relative;
+    padding-left: var(--space-5);
+  }
+
+  .facts li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-green);
+  }
+
+  .cta {
+    justify-self: stretch;
+    text-align: center;
+  }
+
+  .block {
+    padding-block: var(--space-7);
+  }
+
+  @media (min-width: 640px) {
+    .cta {
+      justify-self: start;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .block {
+      padding-block: var(--space-8);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .product-top {
+      grid-template-columns: 55fr 45fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

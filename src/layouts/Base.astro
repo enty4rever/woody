@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
 
 interface Props {
+  /** Page name. The brand is appended: "<title> | <brand>". */
   title: string;
   description?: string;
 }
@@ -30,7 +31,7 @@ const { title, description = site.home.meta.description } = Astro.props;
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Lora:wght@500;600&display=swap"
     />
-    <title>{title}</title>
+    <title>{`${title} | ${site.brand}`}</title>
   </head>
   <body>
     <AnnouncementBar />

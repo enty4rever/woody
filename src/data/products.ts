@@ -20,6 +20,11 @@ export interface FaqItem {
   answer: string;
 }
 
+export interface ProductFeature {
+  title: string;
+  text: string;
+}
+
 export interface Product {
   slug: string;
   type: 'cabinet' | 'shelf';
@@ -49,6 +54,8 @@ export interface Product {
   care: string[];
   /** 5–6 items. */
   faq: FaqItem[];
+  /** 4–5 numbered points on the product page. */
+  features: ProductFeature[];
   /** Cabinet only: photo with the doors open. */
   openImage?: ProductImage;
   /** Cabinet only: extra depth in cm needed in front to open the doors. */
@@ -57,9 +64,10 @@ export interface Product {
   isPlaceholder: boolean;
 }
 
+/** Every product image is a rendering, so every alt text starts with "Rendering: ". */
 const img = (file: string, alt: string): ProductImage => ({
   src: `/images/placeholder/${file}.svg`,
-  alt,
+  alt: `Rendering: ${alt}`,
 });
 
 export const products: Product[] = [
@@ -111,6 +119,13 @@ export const products: Product[] = [
       { question: '[SAMPLE] Question 3?', answer: '[SAMPLE] Answer 3.' },
       { question: '[SAMPLE] Question 4?', answer: '[SAMPLE] Answer 4.' },
       { question: '[SAMPLE] Question 5?', answer: '[SAMPLE] Answer 5.' },
+    ],
+    features: [
+      { title: '[SAMPLE] Point 1 title', text: '[SAMPLE] One sentence for point 1.' },
+      { title: '[SAMPLE] Point 2 title', text: '[SAMPLE] One sentence for point 2.' },
+      { title: '[SAMPLE] Point 3 title', text: '[SAMPLE] One sentence for point 3.' },
+      { title: '[SAMPLE] Point 4 title', text: '[SAMPLE] One sentence for point 4.' },
+      { title: '[SAMPLE] Point 5 title', text: '[SAMPLE] One sentence for point 5.' },
     ],
     openImage: img('cabinet-open', '[SAMPLE] Cabinet – doors open'),
     doorClearanceCm: 40,
@@ -164,6 +179,12 @@ export const products: Product[] = [
       { question: '[SAMPLE] Question 3?', answer: '[SAMPLE] Answer 3.' },
       { question: '[SAMPLE] Question 4?', answer: '[SAMPLE] Answer 4.' },
       { question: '[SAMPLE] Question 5?', answer: '[SAMPLE] Answer 5.' },
+    ],
+    features: [
+      { title: '[SAMPLE] Point 1 title', text: '[SAMPLE] One sentence for point 1.' },
+      { title: '[SAMPLE] Point 2 title', text: '[SAMPLE] One sentence for point 2.' },
+      { title: '[SAMPLE] Point 3 title', text: '[SAMPLE] One sentence for point 3.' },
+      { title: '[SAMPLE] Point 4 title', text: '[SAMPLE] One sentence for point 4.' },
     ],
     isPlaceholder: true,
   },

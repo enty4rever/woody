@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import PlaceholderBadge from '../components/PlaceholderBadge.astro';
+import RenderingTag from '../components/RenderingTag.astro';
 import { products } from '../data/products';
 import { site } from '../data/site';
 
@@ -29,6 +30,7 @@ const stepNumber = (i: number) => String(i + 1).padStart(2, '0');
         height={hero.image.height}
       />
       <PlaceholderBadge isPlaceholder={site.isPlaceholder} />
+      <RenderingTag />
     </div>
   </section>
 

@@ -6,6 +6,7 @@ import { site } from '../data/site';
 import { formatUsd } from '../lib/format';
 import { formatDimensions } from '../lib/units';
 import PlaceholderBadge from './PlaceholderBadge.astro';
+import RenderingTag from './RenderingTag.astro';
 
 interface Props {
   product: Product;
@@ -20,6 +21,7 @@ const image = product.colors[0]?.images[0];
   <a href={href} class="media" tabindex="-1" aria-hidden="true">
     {image && <img src={image.src} alt={image.alt} width="800" height="1000" loading="lazy" />}
     <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
+    <RenderingTag />
   </a>
   <div class="body">
     <p class="eyebrow">{site.home.productTypeLabel[product.type]}</p>

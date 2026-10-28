@@ -8,8 +8,12 @@ export interface SiteLink {
 }
 
 export const site = {
+  /** Brand name. The only place it is written: <title>, header, footer and copyright read it from here. */
+  brand: 'Woody',
   /** True while the copy below holds sample text. The production build refuses to run. */
   isPlaceholder: true,
+  /** Label on every product image (all are renderings). */
+  rendering: 'Rendering',
   announcement: 'Collection preview · Not taking orders yet.',
   header: {
     menuLabel: 'Menu',
@@ -31,7 +35,7 @@ export const site = {
   ] as (SiteLink & { footerOnly?: boolean })[],
   home: {
     meta: {
-      title: '[SAMPLE] Woody | Wood cabinet and shelf',
+      title: '[SAMPLE] Wood cabinet and shelf',
       description: '[SAMPLE] Page description',
     },
     hero: {
@@ -41,7 +45,7 @@ export const site = {
         '[SAMPLE] Two to three lines introducing the brand and its two wood pieces. Say briefly what they are, what they are made of and who they are for.',
       image: {
         src: '/images/placeholder/cabinet-open.svg',
-        alt: '[SAMPLE] Wood cabinet with doors open',
+        alt: 'Rendering: [SAMPLE] Wood cabinet with doors open',
         width: 800,
         height: 1000,
       },
@@ -71,6 +75,46 @@ export const site = {
       quote: '[SAMPLE] One line quoted from the brand story.',
       cite: '[SAMPLE] Founder',
       link: { label: 'Read our story', href: '/our-story' } as SiteLink,
+    },
+  },
+  product: {
+    meta: {
+      description: '[SAMPLE] Product page description',
+    },
+    breadcrumb: {
+      label: 'Breadcrumb',
+      home: { label: 'Home', href: '/' } as SiteLink,
+      collection: { label: 'Collection', href: '/collection' } as SiteLink,
+    },
+    priceNote: 'Proposed retail price',
+    cta: { label: 'Get notified when orders open', href: '/contact' } as SiteLink,
+    colorLegend: 'Color',
+    gallery: {
+      label: 'Product images',
+      prev: 'Previous image',
+      next: 'Next image',
+      thumb: 'Show image',
+    },
+    keyFacts: {
+      label: 'Key facts',
+      wood: 'Wood',
+      weight: 'Weight',
+      colors: (count: number) => `${count} ${count === 1 ? 'color' : 'colors'} available`,
+      setup: {
+        'free-standing': 'Free-standing',
+        'wall-mounted': 'Wall-mounted',
+      },
+      antiTip: 'Includes an anti-tip wall anchor',
+    },
+    doorView: {
+      label: 'Door view',
+      closed: 'Closed',
+      open: 'Open',
+      caption: '[SAMPLE] One sentence caption for the closed and open views.',
+    },
+    features: {
+      eyebrow: '[SAMPLE] Details',
+      title: '[SAMPLE] Section title for the numbered points',
     },
   },
 };

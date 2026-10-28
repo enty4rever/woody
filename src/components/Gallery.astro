@@ -1,0 +1,251 @@
+---
+// Product gallery: main image, prev/next, thumbnails, arrow keys, swipe on touch.
+// Server renders the first color's images; the script swaps the set on "color-change"
+// (sent by ColorSwatch). Without JS only the first image and the counter show.
+import type { Product } from '../data/products';
+import { site } from '../data/site';
+import PlaceholderBadge from './PlaceholderBadge.astro';
+import RenderingTag from './RenderingTag.astro';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const first = product.colors[0];
+const images = first?.images ?? [];
+const sets = Object.fromEntries(product.colors.map((c) => [c.id, c.images]));
+const labels = site.product.gallery;
+---
+
+<section
+  class="gallery"
+  data-gallery
+  data-product={product.slug}
+  data-color={first?.id}
+  data-sets={JSON.stringify(sets)}
+  aria-label={labels.label}
+  aria-roledescription="carousel"
+  tabindex="0"
+>
+  <div class="stage">
+    {images[0] && (
+      <img data-main src={images[0].src} alt={images[0].alt} width="800" height="1000" />
+    )}
+    <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
+    <RenderingTag counter={`1/${images.length}`} />
+    <button type="button" class="nav prev" data-step="-1" aria-label={labels.prev} hidden={images.length < 2}>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+    </button>
+    <button type="button" class="nav next" data-step="1" aria-label={labels.next} hidden={images.length < 2}>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+    </button>
+  </div>
+  <ul class="thumbs" data-thumbs>
+    {images.map((image, i) => (
+      <li>
+        <button type="button" data-thumb={i} aria-current={i === 0 ? 'true' : undefined}>
+          <img src={image.src} alt={image.alt} width="160" height="200" loading="lazy" />
+        </button>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  type Image = { src: string; alt: string };
+  /** Horizontal distance (px) a swipe must travel to change the image. */
+  const SWIPE_MIN = 40;
+
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const sets: Record<string, Image[]> = JSON.parse(root.dataset.sets ?? '{}');
+    const stage = root.querySelector<HTMLElement>('.stage');
+    const main = root.querySelector<HTMLImageElement>('[data-main]');
+    const counter = root.querySelector<HTMLElement>('[data-counter]');
+    const thumbs = root.querySelector<HTMLUListElement>('[data-thumbs]');
+    const navButtons = root.querySelectorAll<HTMLButtonElement>('[data-step]');
+    if (!stage || !main || !thumbs) return;
+
+    let images = sets[root.dataset.color ?? ''] ?? [];
+    let index = 0;
+
+    const show = (i: number) => {
+      if (images.length === 0) return;
+      index = (i + images.length) % images.length;
+      main.src = images[index].src;
+      main.alt = images[index].alt;
+      if (counter) counter.textContent = `${index + 1}/${images.length}`;
+      thumbs.querySelectorAll('button').forEach((button, j) => {
+        if (j === index) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
+    };
+
+    const renderThumbs = () => {
+      thumbs.replaceChildren(
+        ...images.map((image, i) => {
+          const li = document.createElement('li');
+          const button = document.createElement('button');
+          const img = document.createElement('img');
+          button.type = 'button';
+          button.dataset.thumb = String(i);
+          img.src = image.src;
+          img.alt = image.alt;
+          img.width = 160;
+          img.height = 200;
+          button.append(img);
+          li.append(button);
+          return li;
+        }),
+      );
+      navButtons.forEach((button) => (button.hidden = images.length < 2));
+    };
+
+    navButtons.forEach((button) =>
+      button.addEventListener('click', () => show(index + Number(button.dataset.step))),
+    );
+
+    thumbs.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('[data-thumb]');
+      if (button) show(Number(button.dataset.thumb));
+    });
+
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        show(index + (event.key === 'ArrowRight' ? 1 : -1));
+      }
+    });
+
+    // Swipe. touch-action: pan-y on the stage keeps vertical scroll native and hands
+    // horizontal moves to us; pointercancel drops a gesture the browser took over.
+    let start: { id: number; x: number; y: number } | null = null;
+    stage.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') return;
+      start = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    });
+    stage.addEventListener('pointerup', (event) => {
+      if (!start || start.id !== event.pointerId) return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      start = null;
+      if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) show(index + (dx < 0 ? 1 : -1));
+    });
+    stage.addEventListener('pointercancel', () => (start = null));
+
+    document.addEventListener('color-change', (event) => {
+      const { product, color } = (event as CustomEvent<{ product: string; color: string }>).detail;
+      if (product !== root.dataset.product || !sets[color]) return;
+      root.dataset.color = color;
+      images = sets[color];
+      renderThumbs();
+      show(0);
+    });
+  });
+</script>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .gallery:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .stage {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-user-drag: none;
+  }
+
+  .nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-green);
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-green);
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .nav:hover {
+    border-color: var(--color-green-hover);
+    color: var(--color-green-hover);
+  }
+
+  .nav[hidden] {
+    display: none;
+  }
+
+  .prev {
+    left: var(--space-2);
+  }
+
+  .next {
+    right: var(--space-2);
+  }
+
+  .thumbs {
+    display: flex;
+    gap: var(--space-2);
+    padding: 2px;
+    margin: 0;
+    list-style: none;
+    overflow-x: auto;
+  }
+
+  .thumbs button {
+    display: block;
+    width: 64px;
+    padding: 0;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .thumbs button[aria-current='true'] {
+    border-color: var(--color-green);
+  }
+
+  .thumbs img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  /* Without JS the controls do nothing, so hide them */
+  :global(html:not(.js)) .nav,
+  :global(html:not(.js)) .thumbs {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .thumbs button {
+      width: 80px;
+    }
+  }
+</style>

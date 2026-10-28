@@ -3,7 +3,7 @@
 Điền vào chỗ `___`, rồi gửi lại cho Claude. Thứ tự giống hệt interface `Product` trong `src/data/products.ts`.
 Thị trường: chỉ Mỹ. **Mọi câu chữ sản phẩm (tên, mô tả, màu, bảo quản, FAQ) viết bằng tiếng Anh Mỹ.**
 Đơn vị: giá bằng **USD** (có cent, vd `649.99`). Kích thước nhập bằng **cm**, web tự đổi sang inch (làm tròn LÊN ¼ in). Cân nặng và tải trọng nhập bằng **kg**, web tự đổi sang lb (làm tròn LÊN).
-Ảnh sản phẩm là ảnh render; web luôn ghi rõ điều đó.
+Ảnh sản phẩm là ảnh render; web luôn ghi rõ điều đó. Alt text của ảnh tự động có chữ `Rendering: ` ở đầu, chỉ cần mô tả ảnh.
 
 Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đặt `isPlaceholder: false`. Lúc đó `npm run build` mới chạy được.
 
@@ -33,8 +33,9 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 16 | Có bộ chống lật? (`antiTipKit`): có / không | | ___ |
 | 17 | Bảo quản: xem bên dưới (`care`) | | |
 | 18 | FAQ: xem bên dưới (`faq`) | | |
-| 19 | Ảnh mở cửa (`openImage`) | tên file | ___ |
-| 20 | Khoảng trống cần phía trước để mở cửa (`doorClearanceCm`) | cm (web đổi sang in) | ___ |
+| 19 | Điểm nổi bật: xem bên dưới (`features`) | | |
+| 20 | Ảnh mở cửa (`openImage`) | tên file | ___ |
+| 21 | Khoảng trống cần phía trước để mở cửa (`doorClearanceCm`) | cm (web đổi sang in) | ___ |
 
 **Màu** (thêm dòng nếu có nhiều màu):
 
@@ -56,6 +57,13 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 4. Q: ___ / A: ___
 5. Q: ___ / A: ___
 6. Q: ___ / A: ___
+
+**Điểm nổi bật** (4–5 điểm, tiếng Anh; web đánh số 01–05). Chỉ ghi điều đã xác nhận:
+1. Title: ___ / Text (1 câu): ___
+2. Title: ___ / Text (1 câu): ___
+3. Title: ___ / Text (1 câu): ___
+4. Title: ___ / Text (1 câu): ___
+5. Title: ___ / Text (1 câu): ___ (không bắt buộc)
 
 ---
 
@@ -81,6 +89,7 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 16 | Có bộ chống lật? (`antiTipKit`): có / không | | ___ |
 | 17 | Bảo quản: xem bên dưới (`care`) | | |
 | 18 | FAQ: xem bên dưới (`faq`) | | |
+| 19 | Điểm nổi bật: xem bên dưới (`features`) | | |
 
 **Màu** (thêm dòng nếu có nhiều màu):
 
@@ -102,3 +111,10 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 4. Q: ___ / A: ___
 5. Q: ___ / A: ___
 6. Q: ___ / A: ___
+
+**Điểm nổi bật** (4–5 điểm, tiếng Anh; web đánh số 01–05). Chỉ ghi điều đã xác nhận:
+1. Title: ___ / Text (1 câu): ___
+2. Title: ___ / Text (1 câu): ___
+3. Title: ___ / Text (1 câu): ___
+4. Title: ___ / Text (1 câu): ___
+5. Title: ___ / Text (1 câu): ___ (không bắt buộc)

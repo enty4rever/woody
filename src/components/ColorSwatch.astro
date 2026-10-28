@@ -1,0 +1,94 @@
+---
+// Color choice as real radio inputs with labels. On change it updates "Color: <name>"
+// and sends "color-change" so Gallery and DoorToggle swap their images.
+import type { Product } from '../data/products';
+import { site } from '../data/site';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const name = `color-${product.slug}`;
+---
+
+<fieldset class="swatch" data-swatch data-product={product.slug}>
+  <legend>{site.product.colorLegend}: <span data-color-name>{product.colors[0]?.name}</span></legend>
+  <div class="options">
+    {product.colors.map((color, i) => (
+      <label class="option">
+        <input
+          type="radio"
+          class="visually-hidden"
+          name={name}
+          value={color.id}
+          data-name={color.name}
+          checked={i === 0}
+        />
+        <span class="dot" style={`--swatch: ${color.hex}`} aria-hidden="true"></span>
+        <span class="visually-hidden">{color.name}</span>
+      </label>
+    ))}
+  </div>
+</fieldset>
+
+<script>
+  document.querySelectorAll<HTMLFieldSetElement>('[data-swatch]').forEach((fieldset) => {
+    const label = fieldset.querySelector<HTMLElement>('[data-color-name]');
+    fieldset.addEventListener('change', (event) => {
+      const input = event.target as HTMLInputElement;
+      if (label) label.textContent = input.dataset.name ?? '';
+      document.dispatchEvent(
+        new CustomEvent('color-change', {
+          detail: { product: fieldset.dataset.product, color: input.value },
+        }),
+      );
+    });
+  });
+</script>
+
+<style>
+  .swatch {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .option {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .dot {
+    display: block;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--swatch);
+  }
+
+  /* Selected = green ring (identity) */
+  input:checked + .dot {
+    box-shadow: 0 0 0 3px var(--color-bg), 0 0 0 5px var(--color-green);
+  }
+
+  input:focus-visible + .dot {
+    outline: 2px solid var(--color-green);
+    outline-offset: 7px;
+  }
+</style>
