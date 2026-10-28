@@ -27,6 +27,9 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 10 | Hoàn thiện (`finish`) | | ___ |
 | 11 | Màu: xem bảng màu bên dưới (`colors`) | | |
 | 12 | Số cửa (`doors`) | cửa | ___ |
+| 12a | Kiểu cửa, tiếng Anh (`doorStyle`), vd `sliding glass` | | ___ |
+| 12b | Số ngăn kéo (`drawers`) | ngăn kéo | ___ |
+| 12c | Vách hông nếu khác vật liệu chính, tiếng Anh (`sidePanels`), vd `glass` | | ___ |
 | 13 | Số kệ (`shelves`) | kệ | ___ |
 | 14 | Số ngăn (`compartments`) | ngăn | ___ |
 | 15 | Cách lắp đặt (`setup`): đứng tự do / treo tường | | ___ |
@@ -35,7 +38,7 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 18 | FAQ: xem bên dưới (`faq`) | | |
 | 19 | Điểm nổi bật: xem bên dưới (`features`) | | |
 | 20 | Ảnh mở cửa (`openImage`) | tên file | ___ |
-| 21 | Khoảng trống cần phía trước để mở cửa (`doorClearanceCm`) | cm (web đổi sang in) | ___ |
+| 21 | Khoảng trống cần phía trước để kéo ngăn kéo ra (`frontClearanceCm`) | cm (web đổi sang in) | ___ |
 
 **Màu** (thêm dòng nếu có nhiều màu):
 
@@ -83,6 +86,8 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 10 | Hoàn thiện (`finish`) | | ___ |
 | 11 | Màu: xem bảng màu bên dưới (`colors`) | | |
 | 12 | Số cửa (`doors`) | cửa | ___ (thường là 0) |
+| 12b | Số ngăn kéo (`drawers`) | ngăn kéo | ___ |
+| 12d | Hình dáng, tiếng Anh (`shape`), vd `quarter-round corner` (kệ góc: fit checker đo dọc theo từng bức tường) | | ___ |
 | 13 | Số kệ (`shelves`) | kệ | ___ |
 | 14 | Số ngăn (`compartments`) | ngăn | ___ |
 | 15 | Cách lắp đặt (`setup`): đứng tự do / treo tường | | ___ |

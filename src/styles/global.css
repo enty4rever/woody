@@ -124,6 +124,13 @@ a:hover {
   border: 0;
 }
 
+/* in / cm values: both are in the HTML, html[data-unit] (set in Base.astro) picks one.
+   Without JS there is no data-unit, so inches show. */
+html:not([data-unit='cm']) [data-u='cm'],
+html[data-unit='cm'] [data-u='in'] {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

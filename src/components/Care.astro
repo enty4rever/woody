@@ -1,0 +1,72 @@
+---
+// Care tiles from product.care. Green number and top rule = identity, no green fill.
+interface Props {
+  items: string[];
+  eyebrow: string;
+  title: string;
+}
+
+const { items, eyebrow, title } = Astro.props;
+const number = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<section aria-labelledby="care-title">
+  <header class="head">
+    <p class="eyebrow">{eyebrow}</p>
+    <h2 id="care-title">{title}</h2>
+  </header>
+  <ul>
+    {items.map((item, i) => (
+      <li>
+        <span class="number" aria-hidden="true">{number(i)}</span>
+        <p>{item}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-green);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .number {
+    color: var(--color-green);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  @media (min-width: 640px) {
+    ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    ul {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

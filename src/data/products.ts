@@ -46,6 +46,13 @@ export interface Product {
   finish: string;
   colors: ProductColor[];
   doors: number;
+  /** e.g. 'sliding glass'. Only when doors > 0. */
+  doorStyle?: string;
+  drawers: number;
+  /** e.g. 'glass'. Only when they differ from the main material. */
+  sidePanels?: string;
+  /** e.g. 'quarter-round corner'. A corner piece is measured along each wall. */
+  shape?: string;
   shelves: number;
   compartments: number;
   setup: 'free-standing' | 'wall-mounted';
@@ -58,8 +65,8 @@ export interface Product {
   features: ProductFeature[];
   /** Cabinet only: photo with the doors open. */
   openImage?: ProductImage;
-  /** Cabinet only: extra depth in cm needed in front to open the doors. */
-  doorClearanceCm?: number;
+  /** Cabinet only: room in cm needed in front to pull out the drawers. Added to depth in the fit checker. */
+  frontClearanceCm?: number;
   /** True while the entry holds sample data. The production build refuses to run. */
   isPlaceholder: boolean;
 }
@@ -103,6 +110,9 @@ export const products: Product[] = [
       },
     ],
     doors: 2,
+    doorStyle: 'sliding glass',
+    drawers: 2,
+    sidePanels: 'glass',
     shelves: 4,
     compartments: 1,
     setup: 'free-standing',
@@ -128,7 +138,7 @@ export const products: Product[] = [
       { title: '[SAMPLE] Point 5 title', text: '[SAMPLE] One sentence for point 5.' },
     ],
     openImage: img('cabinet-open', '[SAMPLE] Cabinet – doors open'),
-    doorClearanceCm: 40,
+    frontClearanceCm: 40,
     isPlaceholder: true,
   },
   {
@@ -163,7 +173,9 @@ export const products: Product[] = [
       },
     ],
     doors: 0,
-    shelves: 5,
+    drawers: 0,
+    shape: 'quarter-round corner',
+    shelves: 4,
     compartments: 0,
     setup: 'free-standing',
     antiTipKit: true,

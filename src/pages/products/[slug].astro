@@ -1,11 +1,17 @@
 ---
-// Product page, top half (Phase 4a). Every fact comes from products.ts, every label from site.ts.
+// Product page (Phase 4a top half, Phase 4b specs to cross-sell). Every fact comes from products.ts,
+// every label from site.ts.
 import Base from '../../layouts/Base.astro';
 import Gallery from '../../components/Gallery.astro';
 import ColorSwatch from '../../components/ColorSwatch.astro';
 import StickyInfo from '../../components/StickyInfo.astro';
 import DoorToggle from '../../components/DoorToggle.astro';
 import FeatureList from '../../components/FeatureList.astro';
+import SpecTable from '../../components/SpecTable.astro';
+import FitChecker from '../../components/FitChecker.astro';
+import Care from '../../components/Care.astro';
+import Faq from '../../components/Faq.astro';
+import CrossSell from '../../components/CrossSell.astro';
 import { products, type Product } from '../../data/products';
 import { site } from '../../data/site';
 import { formatUsd } from '../../lib/format';
@@ -27,7 +33,7 @@ const keyFacts = [
   formatDimensions(product.dimensionsCm),
   `${facts.wood}: ${product.woodType}`,
   facts.setup[product.setup],
-  facts.colors(product.colors.length),
+  product.colors.length === 1 ? `${facts.color}: ${product.colors[0].name}` : facts.colors(product.colors.length),
   `${facts.weight}: ${formatPounds(product.weightKg)}`,
   ...(product.antiTipKit ? [facts.antiTip] : []),
 ];
@@ -55,7 +61,7 @@ const keyFacts = [
             <span class="amount">{formatUsd(product.priceUsd)}</span>
             <span class="price-note">{copy.priceNote}</span>
           </p>
-          <ColorSwatch product={product} />
+          {product.colors.length > 1 && <ColorSwatch product={product} />}
           <ul class="facts" aria-label={facts.label}>
             {keyFacts.map((fact) => <li>{fact}</li>)}
           </ul>
@@ -72,6 +78,26 @@ const keyFacts = [
 
     <div class="block">
       <FeatureList features={product.features} eyebrow={copy.features.eyebrow} title={copy.features.title} />
+    </div>
+
+    <div class="block">
+      <SpecTable product={product} />
+    </div>
+
+    <div class="block">
+      <FitChecker product={product} />
+    </div>
+
+    <div class="block">
+      <Care items={product.care} eyebrow={copy.care.eyebrow} title={copy.care.title} />
+    </div>
+
+    <div class="block">
+      <Faq items={product.faq} eyebrow={copy.faq.eyebrow} title={copy.faq.title} />
+    </div>
+
+    <div class="block">
+      <CrossSell product={product} />
     </div>
   </div>
 </Base>

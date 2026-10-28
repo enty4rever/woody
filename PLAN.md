@@ -115,7 +115,7 @@ English copy, `[SAMPLE]` marker, `priceUsd` + `formatUsd`, `src/lib/units.ts` (i
 7. Open/closed photo toggle (cabinet only)
 8. "Why it works": 4–5 numbered points tied to how it is built
 9. Dimensions: big W/D/H numbers in inches + full spec table (in / lb). **Phase 4b:** in ⇄ cm toggle
-10. Fit checker: user types W, D, H of their space in inches (cm once 4b lands) → each dimension shows "fits / too small by X in"; include door clearance for the cabinet
+10. Fit checker: user types W, D, H of their space in inches (cm once 4b lands) → each dimension shows "fits / too small by X in"; front clearance for drawers (cabinet)
 11. Care (4 tiles)
 12. FAQ
 13. Cross-sell to the other product

@@ -21,6 +21,15 @@ const { title, description = site.home.meta.description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Mark JS before any CSS applies so the mobile menu starts collapsed (no layout shift) -->
     <script is:inline>document.documentElement.classList.add('js')</script>
+    <!-- Saved in / cm choice (SpecTable), set before paint so cm users never see inches flash.
+         Key "unit" must match SpecTable.astro. -->
+    <script is:inline>
+      (function () {
+        var unit = 'in';
+        try { if (localStorage.getItem('unit') === 'cm') unit = 'cm'; } catch (e) {}
+        document.documentElement.dataset.unit = unit;
+      })();
+    </script>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

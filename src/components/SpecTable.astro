@@ -1,0 +1,247 @@
+---
+// Big W / D / H numbers plus the full spec table. The in / cm radios switch every
+// [data-u] value on the page (this table and FitChecker) through html[data-unit].
+// Without JS inches show and the radios are hidden.
+import type { Product } from '../data/products';
+import { site } from '../data/site';
+import { formatInches, formatPounds, formatCm, formatKg } from '../lib/units';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const copy = site.product.dimensions;
+const units = site.product.units;
+const rows = copy.rows;
+
+type Measure = { in: string; cm: string };
+type Row = { label: string; value: string | Measure };
+
+const length = (cm: number): Measure => ({ in: formatInches(cm), cm: formatCm(cm) });
+const mass = (kg: number): Measure => ({ in: formatPounds(kg), cm: formatKg(kg) });
+const count = (n: number): string => (n === 0 ? copy.none : String(n));
+const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+
+const big = (['width', 'depth', 'height'] as const).map((dim) => ({
+  label: copy[dim],
+  value: length(product.dimensionsCm[dim]),
+}));
+
+const table: Row[] = [
+  { label: rows.wood, value: product.woodType },
+  { label: rows.finish, value: product.finish },
+  { label: rows.colors, value: product.colors.map((c) => c.name).join(', ') },
+  ...(product.shape ? [{ label: rows.shape, value: capitalize(product.shape) }] : []),
+  {
+    label: rows.doors,
+    value: product.doors > 0 && product.doorStyle ? `${product.doors}, ${product.doorStyle}` : count(product.doors),
+  },
+  { label: rows.drawers, value: count(product.drawers) },
+  ...(product.sidePanels ? [{ label: rows.sidePanels, value: capitalize(product.sidePanels) }] : []),
+  { label: rows.shelves, value: count(product.shelves) },
+  { label: rows.compartments, value: count(product.compartments) },
+  { label: rows.weight, value: mass(product.weightKg) },
+  { label: rows.maxLoad, value: mass(product.maxLoadPerShelfKg) },
+  { label: rows.setup, value: site.product.keyFacts.setup[product.setup] },
+  { label: rows.antiTip, value: product.antiTipKit ? copy.yes : copy.no },
+  ...(product.frontClearanceCm ? [{ label: rows.frontClearance, value: length(product.frontClearanceCm) }] : []),
+];
+---
+
+<section class="specs" aria-labelledby="specs-title">
+  <header class="head">
+    <div>
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2 id="specs-title">{copy.title}</h2>
+    </div>
+    <fieldset class="unit-toggle" data-unit-toggle>
+      <legend class="visually-hidden">{units.legend}</legend>
+      <label>
+        <input type="radio" class="visually-hidden" name="unit" value="in" checked />
+        <span>{units.in}</span>
+      </label>
+      <label>
+        <input type="radio" class="visually-hidden" name="unit" value="cm" />
+        <span>{units.cm}</span>
+      </label>
+    </fieldset>
+  </header>
+
+  <dl class="big">
+    {big.map(({ label, value }) => (
+      <div>
+        <dt>{label}</dt>
+        <dd>
+          <span data-u="in">{value.in}</span>
+          <span data-u="cm">{value.cm}</span>
+        </dd>
+      </div>
+    ))}
+  </dl>
+
+  <table>
+    <caption class="visually-hidden">{copy.tableLabel}</caption>
+    <tbody>
+      {table.map(({ label, value }) => (
+        <tr>
+          <th scope="row">{label}</th>
+          <td>
+            {typeof value === 'string' ? value : (
+              <>
+                <span data-u="in">{value.in}</span>
+                <span data-u="cm">{value.cm}</span>
+              </>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="note">{copy.note}</p>
+</section>
+
+<script>
+  /** Must match the key read in Base.astro <head>. */
+  const KEY = 'unit';
+  const root = document.documentElement;
+
+  document.querySelectorAll<HTMLFieldSetElement>('[data-unit-toggle]').forEach((fieldset) => {
+    const current = root.dataset.unit === 'cm' ? 'cm' : 'in';
+    const radio = fieldset.querySelector<HTMLInputElement>(`input[value="${current}"]`);
+    if (radio) radio.checked = true;
+
+    fieldset.addEventListener('change', (event) => {
+      const unit = (event.target as HTMLInputElement).value === 'cm' ? 'cm' : 'in';
+      root.dataset.unit = unit;
+      try {
+        localStorage.setItem(KEY, unit);
+      } catch {
+        // Storage blocked (private mode etc.): the choice lasts for this page only.
+      }
+      document.dispatchEvent(new CustomEvent('unit-change', { detail: { unit } }));
+    });
+  });
+</script>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+  }
+
+  .head > div {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  :global(html:not(.js)) .unit-toggle {
+    display: none;
+  }
+
+  /* Same look as the DoorToggle buttons: green outline, selected = surface + green bar */
+  .unit-toggle {
+    display: inline-flex;
+    padding: 0;
+    border: 1px solid var(--color-green);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .unit-toggle label {
+    cursor: pointer;
+  }
+
+  .unit-toggle label + label {
+    border-left: 1px solid var(--color-green);
+  }
+
+  .unit-toggle span {
+    display: block;
+    min-width: 4rem;
+    padding: var(--space-2) var(--space-4);
+    color: var(--color-muted);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .unit-toggle input:checked + span {
+    background: var(--color-surface);
+    color: var(--color-green);
+    box-shadow: inset 0 -2px 0 var(--color-green);
+  }
+
+  .unit-toggle input:focus-visible + span {
+    outline: 2px solid var(--color-green);
+    outline-offset: -4px;
+  }
+
+  .big {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .big > div {
+    display: grid;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: 2px solid var(--color-green);
+  }
+
+  .big dt {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  .big dd {
+    margin: 0;
+    color: var(--color-green);
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    width: 45%;
+    padding-right: var(--space-4);
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  .note {
+    margin-top: var(--space-3);
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+
+  @media (min-width: 768px) {
+    .big dd {
+      font-size: var(--text-2xl);
+    }
+
+    th {
+      width: 40%;
+    }
+  }
+</style>

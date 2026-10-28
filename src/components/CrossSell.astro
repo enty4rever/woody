@@ -1,0 +1,45 @@
+---
+// The other product(s), shown with the same card as the home page.
+import { products, type Product } from '../data/products';
+import { site } from '../data/site';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const others = products.filter((p) => p.slug !== product.slug);
+const copy = site.product.crossSell;
+---
+
+{others.length > 0 && (
+  <section aria-labelledby="cross-sell-title">
+    <header class="head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2 id="cross-sell-title">{copy.title}</h2>
+    </header>
+    <div class="grid">
+      {others.map((other) => <ProductCard product={other} />)}
+    </div>
+  </section>
+)}
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 22rem));
+    }
+  }
+</style>

@@ -1,0 +1,302 @@
+---
+// "Will it fit?": the visitor types the size of their space, each dimension gets a written
+// result (never color alone). Unit follows html[data-unit] (SpecTable radios); a unit typed
+// in the box ("60 cm") wins. Math lives in src/lib/fit.ts. Without JS the form is hidden.
+import type { Product } from '../data/products';
+import { site } from '../data/site';
+import { formatInches, formatCm } from '../lib/units';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const copy = site.product.fit;
+const units = site.product.units;
+const corner = product.shape === 'quarter-round corner';
+const labels = corner ? copy.cornerLabels : copy.labels;
+const id = (part: string) => `fit-${product.slug}-${part}`;
+const dims = ['width', 'depth', 'height'] as const;
+
+// Sentence templates for the script ({x} = amount)
+const templates = {
+  fits: copy.fits('{x}'),
+  lessThan: copy.lessThan('{x}'),
+  exact: copy.exact,
+  tooSmall: copy.tooSmall('{x}'),
+  error: copy.error,
+  labels,
+};
+---
+
+<section class="fit" aria-labelledby="fit-title">
+  <header class="head">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="fit-title">{copy.title}</h2>
+    <p class="intro">{copy.intro}</p>
+  </header>
+
+  <noscript><p class="intro">{copy.noScript}</p></noscript>
+
+  <form
+    novalidate
+    data-fit
+    data-product={JSON.stringify({ dimensionsCm: product.dimensionsCm, frontClearanceCm: product.frontClearanceCm })}
+    data-copy={JSON.stringify(templates)}
+  >
+    {corner && <p class="hint" id={id('hint')}>{copy.cornerHint}</p>}
+    <div class="fields">
+      {dims.map((dim) => (
+        <div class="field">
+          <label for={id(dim)}>
+            {labels[dim]} <span data-u="in">({units.in})</span><span data-u="cm">({units.cm})</span>
+          </label>
+          <input
+            id={id(dim)}
+            name={dim}
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            aria-describedby={[corner && dim !== 'height' ? id('hint') : '', id(`${dim}-error`)].filter(Boolean).join(' ')}
+          />
+          <p class="error" id={id(`${dim}-error`)} data-error></p>
+        </div>
+      ))}
+    </div>
+    {product.frontClearanceCm && (
+      <p class="hint">
+        <span data-u="in">{copy.clearanceNote(formatInches(product.frontClearanceCm))}</span>
+        <span data-u="cm">{copy.clearanceNote(formatCm(product.frontClearanceCm))}</span>
+      </p>
+    )}
+    <button type="submit" class="btn btn-outline">{copy.submit}</button>
+    <div class="results" aria-live="polite" data-results>
+      <ul hidden aria-label={copy.resultsLabel}></ul>
+    </div>
+  </form>
+</section>
+
+<script>
+  import { parseLength, lengthToCm, checkFit, describeFit, type Dimension, type Unit } from '../lib/fit';
+
+  type Copy = {
+    fits: string;
+    lessThan: string;
+    exact: string;
+    tooSmall: string;
+    error: string;
+    labels: Record<Dimension, string>;
+  };
+
+  const DIMS: Dimension[] = ['width', 'depth', 'height'];
+  const pageUnit = (): Unit => (document.documentElement.dataset.unit === 'cm' ? 'cm' : 'in');
+  /** Up to 2 decimals, no trailing zeros: 86.36, 34. */
+  const tidy = (n: number) => String(Math.round(n * 100) / 100);
+
+  document.querySelectorAll<HTMLFormElement>('[data-fit]').forEach((form) => {
+    const product = JSON.parse(form.dataset.product ?? '{}');
+    const copy: Copy = JSON.parse(form.dataset.copy ?? '{}');
+    const list = form.querySelector<HTMLUListElement>('[data-results] ul');
+    const input = (dim: Dimension) => form.elements.namedItem(dim) as HTMLInputElement;
+
+    const setError = (field: HTMLInputElement, message: string) => {
+      const error = field.parentElement?.querySelector<HTMLElement>('[data-error]');
+      if (error) error.textContent = message;
+      if (message) field.setAttribute('aria-invalid', 'true');
+      else field.removeAttribute('aria-invalid');
+    };
+
+    const run = (focusError: boolean) => {
+      const unit = pageUnit();
+      const space: Partial<Record<Dimension, number>> = {};
+      let firstBad: HTMLInputElement | null = null;
+
+      for (const dim of DIMS) {
+        const field = input(dim);
+        const parsed = parseLength(field.value);
+        if (parsed) {
+          space[dim] = lengthToCm(parsed, unit);
+          setError(field, '');
+        } else {
+          setError(field, copy.error);
+          firstBad ??= field;
+        }
+      }
+
+      if (!list) return;
+      if (firstBad) {
+        list.hidden = true;
+        list.replaceChildren();
+        if (focusError) firstBad.focus();
+        return;
+      }
+
+      const items = checkFit(product, space as Record<Dimension, number>).map((result) => {
+        const verdict = describeFit(result, unit);
+        const text =
+          verdict.kind === 'exact'
+            ? copy.exact
+            : copy[verdict.kind === 'short' ? 'tooSmall' : verdict.kind === 'spare' ? 'fits' : 'lessThan'].replace(
+                '{x}',
+                verdict.amount,
+              );
+        const li = document.createElement('li');
+        li.className = result.fits ? 'is-fit' : 'is-short';
+        const mark = document.createElement('span');
+        mark.className = 'mark';
+        mark.setAttribute('aria-hidden', 'true');
+        mark.textContent = result.fits ? '✓' : '✕';
+        const label = document.createElement('strong');
+        label.textContent = `${copy.labels[result.dim]}: `;
+        li.append(mark, label, text);
+        return li;
+      });
+      list.replaceChildren(...items);
+      list.hidden = false;
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      run(true);
+    });
+
+    // Switching units converts what was typed (unless it carries its own unit) and re-checks.
+    document.addEventListener('unit-change', (event) => {
+      const unit = (event as CustomEvent<{ unit: Unit }>).detail.unit;
+      for (const dim of DIMS) {
+        const field = input(dim);
+        const parsed = parseLength(field.value);
+        if (!parsed || parsed.unit) continue;
+        const from: Unit = unit === 'cm' ? 'in' : 'cm';
+        const cm = lengthToCm(parsed, from);
+        field.value = tidy(unit === 'cm' ? cm : cm / 2.54);
+      }
+      if (list && !list.hidden) run(false);
+    });
+  });
+</script>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+
+  .intro,
+  .hint {
+    color: var(--color-muted);
+  }
+
+  .hint {
+    font-size: var(--text-sm);
+  }
+
+  :global(html:not(.js)) [data-fit] {
+    display: none;
+  }
+
+  form {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    max-width: 40rem;
+  }
+
+  .fields {
+    display: grid;
+    gap: var(--space-3);
+    width: 100%;
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  /* Green border on bg: 8.64:1, above the 3:1 needed for input edges */
+  input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-green);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  button {
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  input:focus-visible {
+    outline-offset: 1px;
+  }
+
+  input[aria-invalid='true'] {
+    border-width: 2px;
+  }
+
+  .error {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  .error:empty {
+    display: none;
+  }
+
+  .results {
+    width: 100%;
+  }
+
+  .results ul {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    list-style: none;
+  }
+
+  .results ul[hidden] {
+    display: none;
+  }
+
+  .results :global(li) {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .results :global(.mark) {
+    width: 1.25em;
+    flex: none;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .results :global(.is-fit .mark) {
+    color: var(--color-green);
+  }
+
+  .results :global(.is-short .mark) {
+    color: var(--color-text);
+  }
+
+  @media (min-width: 640px) {
+    .fields {
+      grid-template-columns: repeat(3, 1fr);
+      align-items: start;
+    }
+  }
+</style>

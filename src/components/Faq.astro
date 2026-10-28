@@ -1,0 +1,76 @@
+---
+// Questions as <details>/<summary>: opens with keyboard and without JS.
+import type { FaqItem } from '../data/products';
+
+interface Props {
+  items: FaqItem[];
+  eyebrow: string;
+  title: string;
+}
+
+const { items, eyebrow, title } = Astro.props;
+---
+
+<section aria-labelledby="faq-title">
+  <header class="head">
+    <p class="eyebrow">{eyebrow}</p>
+    <h2 id="faq-title">{title}</h2>
+  </header>
+  <div class="list">
+    {items.map((item) => (
+      <details>
+        <summary>{item.question}</summary>
+        <p>{item.answer}</p>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .list {
+    max-width: 48rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  details {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  summary {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: space-between;
+    padding-block: var(--space-4);
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Green +/− = identity icon */
+  summary::after {
+    content: '+' / '';
+    flex: none;
+    color: var(--color-green);
+    font-size: var(--text-lg);
+    line-height: 1.2;
+  }
+
+  details[open] summary::after {
+    content: '−' / '';
+  }
+
+  details p {
+    padding-bottom: var(--space-4);
+    color: var(--color-muted);
+  }
+</style>
