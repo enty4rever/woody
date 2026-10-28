@@ -1,0 +1,45 @@
+---
+// Shows "DỮ LIỆU MẪU" in the top-right corner when a product holds sample data.
+// The parent element must have position: relative.
+interface Props {
+  isPlaceholder: boolean;
+}
+
+const { isPlaceholder } = Astro.props;
+---
+
+{isPlaceholder && (
+  <div class="placeholder-badge" role="note">
+    <span>Dữ liệu mẫu</span>
+  </div>
+)}
+
+<style>
+  .placeholder-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    z-index: 2;
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-placeholder) 0 6px,
+      var(--color-placeholder-ink) 6px 12px
+    );
+    pointer-events: none;
+  }
+
+  .placeholder-badge span {
+    display: block;
+    padding: var(--space-1) var(--space-2);
+    border-radius: 2px;
+    background: var(--color-placeholder);
+    color: var(--color-placeholder-ink);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+</style>

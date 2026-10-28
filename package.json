@@ -7,7 +7,9 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/check-data.mjs && astro build",
+    "build:preview": "astro build",
+    "check:data": "node scripts/check-data.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

@@ -5,3 +5,4 @@
 - Do only the phase I ask for. List what you changed at the end.
 - Do not invent product specs. If data is missing, leave a TODO and tell me.
 - Brown = actions (primary buttons, links, prices). Green = identity accents (outline buttons, eyebrows, icons, borders, focus). No large green backgrounds. Never brown on green.
+- Placeholder data is marked [MẪU] and isPlaceholder: true. Never remove these markers unless I give real data.
