@@ -1,6 +1,7 @@
 // All page copy lives here. Pages read text only from this file (product facts: products.ts).
-// Sample copy carries the placeholder marker (see scripts/check-data.mjs). The production build
-// refuses to run while any remain.
+// Sample copy, if any comes back, must carry the placeholder marker (see scripts/check-data.mjs):
+// the production build refuses to run while any remain.
+import { warranty } from './products.ts';
 
 export interface SiteLink {
   label: string;
@@ -11,7 +12,7 @@ export const site = {
   /** Brand name. The only place it is written: <title>, header, footer and copyright read it from here. */
   brand: 'Woody',
   /** True while the copy below holds sample text. The production build refuses to run. */
-  isPlaceholder: true,
+  isPlaceholder: false,
   /** Label on every product image (all are renderings). */
   rendering: 'Rendering',
   announcement: 'Collection preview · Not taking orders yet.',
@@ -49,14 +50,15 @@ export const site = {
   ] as (SiteLink & { footerOnly?: boolean })[],
   home: {
     meta: {
-      title: '[SAMPLE] Wood cabinet and shelf',
-      description: '[SAMPLE] Page description',
+      title: 'Pearl inlay furniture',
+      description:
+        'A glass display cabinet and a corner shelf in solid acacia, with mother-of-pearl inlay hand-cut and set by artisans in Huế, Vietnam.',
     },
     hero: {
-      eyebrow: '[SAMPLE] Collection preview',
-      title: '[SAMPLE] Main home page headline',
+      eyebrow: 'Collection preview',
+      title: 'Vietnamese pearl inlay for the modern home',
       intro:
-        '[SAMPLE] Two to three lines introducing the brand and its two wood pieces. Say briefly what they are, what they are made of and who they are for.',
+        'Woody brings mother-of-pearl inlay from Huế, Vietnam, into US homes. Artisans there cut and set the inlay by hand. The first collection has two pieces: a glass display cabinet and a corner shelf.',
       /** File name in src/assets/products/ (resolved by src/lib/images.ts). */
       image: {
         file: 'cabinet-room',
@@ -66,34 +68,31 @@ export const site = {
       secondary: { label: 'How to measure', href: '/fit-and-care' } as SiteLink,
     },
     products: {
-      eyebrow: '[SAMPLE] Products',
-      title: '[SAMPLE] Two pieces, one set',
+      eyebrow: 'The collection',
+      title: 'Two pieces to start',
     },
     /** Eyebrow on each product card, by product.type. */
     productTypeLabel: {
-      cabinet: '[SAMPLE] Cabinet',
-      shelf: '[SAMPLE] Shelf',
+      cabinet: 'Display cabinet',
+      shelf: 'Corner shelf',
     },
     productCta: 'View details',
     steps: {
-      eyebrow: '[SAMPLE] Before you choose',
+      eyebrow: 'Before you choose',
       title: 'Choose with confidence',
       items: [
-        { title: 'Measure your space', text: '[SAMPLE] Short note on measuring the width, depth and height of the spot.' },
-        { title: 'Check front clearance', text: '[SAMPLE] Short note on the room needed in front to pull out the drawers.' },
-        { title: 'Plan your setup', text: '[SAMPLE] Short note on free-standing or anchoring to the wall.' },
+        { title: 'Measure your space', text: 'Measure the width, depth and height of the spot. Then check the fit on the product page.' },
+        { title: 'Check front clearance', text: 'Drawers need room to open. Count that space in front when you measure the depth.' },
+        { title: 'Plan your setup', text: 'Decide where the piece will stand, and whether you will anchor it to the wall.' },
       ],
     },
     story: {
-      quote: '[SAMPLE] One line quoted from the brand story.',
-      cite: '[SAMPLE] Founder',
+      quote: 'An effortless touch of Vietnamese pearl inlay, bringing timeless elegance into your modern home.',
+      cite: 'The Woody team',
       link: { label: 'Read our story', href: '/our-story' } as SiteLink,
     },
   },
   product: {
-    meta: {
-      description: '[SAMPLE] Product page description',
-    },
     priceNote: 'Proposed retail price',
     cta: { label: 'Get notified when orders open', href: '/contact' } as SiteLink,
     colorLegend: 'Color',
@@ -120,16 +119,16 @@ export const site = {
       antiTip: (type?: string) => (type ? `Includes a ${type} anti-tip kit` : 'Includes an anti-tip kit'),
     },
     doorView: {
-      eyebrow: '[SAMPLE] Door view',
-      title: '[SAMPLE] Section title for the closed and open views',
+      eyebrow: 'Door view',
+      title: 'Closed or open',
       label: 'Door view',
       closed: 'Closed',
       open: 'Open',
-      caption: '[SAMPLE] One sentence caption for the closed and open views.',
+      caption: 'Switch between the doors closed and one door slid open.',
     },
     features: {
-      eyebrow: '[SAMPLE] Details',
-      title: '[SAMPLE] Section title for the numbered points',
+      eyebrow: 'Details',
+      title: 'Why it works',
     },
     units: {
       legend: 'Units',
@@ -137,8 +136,8 @@ export const site = {
       cm: 'cm',
     },
     dimensions: {
-      eyebrow: '[SAMPLE] Dimensions',
-      title: '[SAMPLE] Section title for the size and specs',
+      eyebrow: 'Dimensions',
+      title: 'Size and specs',
       width: 'Width',
       depth: 'Depth',
       height: 'Height',
@@ -178,9 +177,9 @@ export const site = {
       no: 'Not included',
     },
     fit: {
-      eyebrow: '[SAMPLE] Will it fit?',
-      title: '[SAMPLE] Section title for the fit checker',
-      intro: '[SAMPLE] One sentence asking the visitor to measure the space and type the sizes.',
+      eyebrow: 'Will it fit?',
+      title: 'Check your space',
+      intro: 'Measure the space where it will go, then type the sizes below.',
       labels: {
         width: 'Width',
         depth: 'Depth',
@@ -195,65 +194,69 @@ export const site = {
       cornerHint: 'Measure from the corner along each wall.',
       submit: 'Check fit',
       resultsLabel: 'Fit results',
-      error: '[SAMPLE] Enter a size above 0, for example 23 1/2.',
+      error: 'Enter a size above 0, for example 23 1/2.',
       fits: (amount: string) => `Fits, ${amount} to spare`,
       lessThan: (amount: string) => `Fits, less than ${amount} to spare`,
       exact: 'Fits, no room to spare',
       tooSmall: (amount: string) => `Too small by ${amount}`,
-      clearanceNote: (amount: string) => `[SAMPLE] Depth includes ${amount} in front to pull out the drawers.`,
-      noScript: '[SAMPLE] Turn on JavaScript to use the fit checker, or compare your space with the sizes above.',
+      clearanceNote: (amount: string) => `Depth includes ${amount} in front so the drawers can open.`,
+      noScript: 'Turn on JavaScript to use the fit checker, or compare your space with the sizes above.',
     },
     care: {
-      eyebrow: '[SAMPLE] Care',
-      title: '[SAMPLE] Section title for care',
+      eyebrow: 'Care',
+      title: 'Caring for it',
     },
     faq: {
-      eyebrow: '[SAMPLE] FAQ',
-      title: '[SAMPLE] Section title for questions',
+      eyebrow: 'FAQ',
+      title: 'Questions and answers',
     },
     crossSell: {
-      eyebrow: '[SAMPLE] Pairs well with',
-      title: '[SAMPLE] Section title for the other product',
+      eyebrow: 'Pairs well with',
+      title: 'Also in the collection',
     },
   },
   collection: {
     meta: {
       title: 'Collection',
-      description: '[SAMPLE] Collection page description',
+      description:
+        'The first Woody collection: a glass display cabinet and a corner shelf, with mother-of-pearl inlay from Huế, Vietnam.',
     },
-    eyebrow: '[SAMPLE] The collection',
-    title: '[SAMPLE] Collection page headline',
-    intro: '[SAMPLE] One sentence introducing the pieces in the collection.',
+    eyebrow: 'The collection',
+    title: 'The first collection',
+    intro: 'Two pieces with mother-of-pearl inlay, hand-cut and set by artisans in Huế, Vietnam.',
   },
   ourStory: {
     meta: {
       title: 'Our Story',
-      description: '[SAMPLE] Our Story page description',
+      description: 'How Woody brings mother-of-pearl inlay from artisans in Huế, Vietnam, to homes in the United States.',
     },
-    title: '[SAMPLE] Our Story headline',
-    // TODO: story text (150–300 words) to be written by the owner.
+    title: 'Pearl inlay from Huế',
     paragraphs: [
-      '[SAMPLE] Paragraph 1 of the brand story.',
-      '[SAMPLE] Paragraph 2 of the brand story.',
-      '[SAMPLE] Paragraph 3 of the brand story.',
-      '[SAMPLE] Paragraph 4 of the brand story.',
+      'Woody started with one craft: mother-of-pearl inlay from Huế, in central Vietnam.',
+      'Artisans in Huế cut the inlay by hand, one piece at a time, and set each piece by hand as well. ' +
+        'The pattern you see on a Woody piece is the work of their hands.',
+      'We want to bring that work into American homes. Not as something to keep behind a rope, but as furniture ' +
+        'you use every day: a cabinet for the glasses and ceramics you like to see, and a shelf for a corner that sits empty.',
+      'So we keep the shapes simple and modern. Clean lines and solid acacia leave room for the inlay to stand out. ' +
+        'Both pieces go together without tools, with an English picture guide in the box.',
+      'This site is a preview. We are not taking orders yet. If you would like to hear when we do, send us an email.',
     ],
-    quote: '[SAMPLE] One line quoted from the brand story.',
-    cite: '[SAMPLE] Founder',
+    quote: 'An effortless touch of Vietnamese pearl inlay, bringing timeless elegance into your modern home.',
+    cite: 'The Woody team',
   },
   fitCare: {
     meta: {
       title: 'Fit & Care',
-      description: '[SAMPLE] Fit & Care page description',
+      description: 'How to measure for the cabinet and the corner shelf, and how to care for the inlay and the lacquered drawer fronts.',
     },
     title: 'Fit & Care',
-    intro: '[SAMPLE] One sentence on measuring before you choose and caring for the piece after.',
+    intro: 'Measure before you choose, and care for the piece once it is home.',
     measure: {
-      eyebrow: '[SAMPLE] Before you choose',
+      eyebrow: 'Before you choose',
       title: 'How to measure',
       cabinet: {
-        title: '[SAMPLE] Measuring for the cabinet',
-        text: '[SAMPLE] Measure the width, depth and height of the space, then add room in front to pull out the drawers.',
+        title: 'Measuring for the cabinet',
+        text: 'Measure the width, depth and height of the space. Then add room in front so the drawers can open.',
         frontTitle: 'Cabinet space, front view',
         frontDesc: 'The space between two walls, with arrows for width (W) across and height (H) from floor to top.',
         sideTitle: 'Cabinet space, side view',
@@ -265,8 +268,8 @@ export const site = {
         clearance: 'Front clearance',
       },
       corner: {
-        title: '[SAMPLE] Measuring for the corner shelf',
-        text: '[SAMPLE] Start at the corner and measure along each wall, then measure the height.',
+        title: 'Measuring for the corner shelf',
+        text: 'Start at the corner and measure along each wall. Then measure the height.',
         svgTitle: 'How to measure a corner for the corner shelf',
         svgDesc:
           'Top view of a room corner where two walls meet. A dashed quarter circle shows where the shelf sits. Arrows start at the corner and run along wall 1 and along wall 2.',
@@ -280,25 +283,24 @@ export const site = {
       checkFit: 'Check fit on the product page',
     },
     care: {
-      eyebrow: '[SAMPLE] Care',
-      title: '[SAMPLE] Caring for your piece',
-      // TODO: owner will write the inlay and drawer-front care text. Do not mention lacquer (not confirmed).
+      eyebrow: 'Care',
+      title: 'Caring for your piece',
       blocks: [
         {
-          title: '[SAMPLE] General care',
+          title: 'General care',
+          items: ['Keep the piece away from heat sources.', 'Use coasters.'],
+        },
+        {
+          title: 'Caring for the mother-of-pearl inlay',
           items: [
-            '[SAMPLE] General care line 1.',
-            '[SAMPLE] General care line 2.',
-            '[SAMPLE] General care line 3.',
+            'Wipe it with a soft, dry cloth.',
+            'Do not use abrasive or ammonia cleaners.',
+            'Keep it out of direct sun.',
           ],
         },
         {
-          title: '[SAMPLE] Caring for the mother-of-pearl inlay',
-          items: ['[SAMPLE] Inlay care line 1.', '[SAMPLE] Inlay care line 2.'],
-        },
-        {
-          title: '[SAMPLE] Caring for the drawer fronts',
-          items: ['[SAMPLE] Drawer front care line 1.', '[SAMPLE] Drawer front care line 2.'],
+          title: 'Caring for the lacquered drawer fronts',
+          items: ['Wipe them with a soft, damp cloth, then dry them right away.', 'Do not use solvents.'],
         },
       ],
     },
@@ -306,76 +308,81 @@ export const site = {
   policies: {
     meta: {
       title: 'Policies',
-      description: '[SAMPLE] Policies page description',
+      description: 'How this preview site works: no orders or payment, renderings only, planned US delivery, privacy and warranty.',
     },
     title: 'Policies',
-    intro: '[SAMPLE] One sentence saying this page explains how the preview site works.',
+    intro: 'This page explains how the preview site works.',
     sections: [
       {
         id: 'preview',
         title: 'Collection preview',
         text: [
-          '[SAMPLE] This site is a preview of the collection. We are not taking orders yet.',
-          '[SAMPLE] No payment is collected on this site, and nothing can be bought here.',
+          'This site is a preview of the collection. We are not taking orders yet.',
+          'No payment is collected on this site, and nothing can be bought here.',
         ],
       },
       {
         id: 'renderings',
         title: 'Product images are renderings',
-        text: ['[SAMPLE] Every product image on this site is a rendering, not a photo. The finished pieces may look slightly different.'],
+        text: ['Every product image on this site is a rendering, not a photo. The finished pieces may look slightly different.'],
       },
       {
         id: 'delivery',
         title: 'Planned delivery: United States only',
-        text: ['[SAMPLE] When orders open, we plan to deliver within the United States only.'],
+        text: ['When orders open, we plan to deliver within the United States only.'],
       },
       {
         id: 'privacy',
         title: 'Privacy',
         text: [
-          '[SAMPLE] This site collects no personal data and loads nothing from third parties. There are no tracking cookies.',
-          '[SAMPLE] Your browser’s local storage keeps one setting: whether you chose inches or centimeters. It stays on your device.',
+          'We don’t collect personal data or use tracking cookies, and nothing loads from third parties. ' +
+            'Our hosting provider keeps standard access logs. ' +
+            'Your browser remembers one setting on your device: inches or centimeters.',
         ],
+      },
+      {
+        id: 'warranty',
+        title: 'Warranty',
+        text: [`Both pieces carry the same warranty. ${warranty}`],
       },
     ],
     contact: {
       id: 'contact',
       title: 'Contact',
-      text: '[SAMPLE] Questions about these policies?',
+      text: 'Questions about these policies?',
       link: { label: 'Contact us', href: '/contact' } as SiteLink,
     },
   },
   contact: {
     meta: {
       title: 'Contact',
-      description: '[SAMPLE] Contact page description',
+      description: 'Email Woody to hear when orders open.',
     },
     title: 'Contact',
-    intro: '[SAMPLE] One sentence inviting visitors to email to hear when orders open.',
-    email: 'hello@example.com', // [SAMPLE] replace with the real address
+    intro: 'Want to know when orders open? Send us an email and we will let you know.',
+    email: 'woodyfur@gmail.com',
     subject: 'Notify me when orders open',
-    note: '[SAMPLE] One sentence saying the email opens in your own mail app, with the subject filled in.',
+    note: 'The link opens your own mail app, with the subject filled in.',
   },
   support: {
     meta: {
       title: 'Support',
-      description: '[SAMPLE] Support page description',
+      description: 'Assembly steps for both pieces, anchoring the cabinet to the wall, and how to reach us.',
     },
     title: 'Support',
-    intro: '[SAMPLE] One sentence on getting help with assembly and setup.',
-    // TODO: assembly steps and parts list will come with the first production run. No placeholders.
+    intro: 'Help with putting your piece together and setting it up.',
     assembly: {
       id: 'assembly',
       title: 'Assembly',
-      text: '[SAMPLE] A visual assembly guide will ship with the first production run.',
+      text: 'These are the main steps for each piece. The full picture guide comes in the box.',
     },
     /** Cabinet only. */
     anchor: {
       id: 'anchor',
       title: 'Anchor it to the wall',
       text: [
-        '[SAMPLE] We recommend anchoring the cabinet to the wall before you load the shelves.',
-        '[SAMPLE] Use the anti-tip kit to fix the top of the cabinet to the wall, and keep children from climbing on it.',
+        'We recommend anchoring the cabinet to the wall before you load the shelves.',
+        'Use the anti-tip kit to fix the cabinet to the wall, and keep children from climbing on it.',
       ],
     },
     contactSupport: {
@@ -415,10 +422,10 @@ export const site = {
   notFound: {
     meta: {
       title: 'Page not found',
-      description: '[SAMPLE] Page not found description',
+      description: 'This page does not exist.',
     },
     title: 'Page not found',
-    text: '[SAMPLE] One sentence saying this page does not exist.',
+    text: 'This page does not exist. It may have moved, or the link may be wrong.',
     home: { label: 'Go to Home', href: '/' } as SiteLink,
     collection: { label: 'See the collection', href: '/collection' } as SiteLink,
   },

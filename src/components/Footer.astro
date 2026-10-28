@@ -12,7 +12,7 @@ const year = new Date().getFullYear();
       <p class="note">{site.footer.note}</p>
       <p class="note">{site.footer.delivery}</p>
       <p class="note">{site.footer.renderings}</p>
-      <!-- TODO: contact email not provided yet -->
+      <p class="note"><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></p>
     </div>
     <nav aria-label={site.footer.navLabel}>
       <ul>

@@ -2,7 +2,7 @@
 // Big W / D / H numbers plus the full spec table. The in / cm radios switch every
 // [data-u] value on the page (this table and FitChecker) through html[data-unit].
 // Without JS inches show and the radios are hidden.
-import type { Product } from '../data/products';
+import { isCorner, type Product } from '../data/products';
 import { site } from '../data/site';
 import { formatInches, formatInchesTenth, formatPounds, formatCm, formatKg } from '../lib/units';
 
@@ -25,7 +25,7 @@ const count = (n: number): string => (n === 0 ? copy.none : String(n));
 const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 const big = (['width', 'depth', 'height'] as const).map((dim) => ({
-  label: copy[dim],
+  label: isCorner(product) ? site.product.fit.cornerLabels[dim] : copy[dim],
   value: length(product.dimensionsCm[dim]),
 }));
 
