@@ -10,6 +10,26 @@
   - Green on bg 8.64:1, green on surface 7.79:1. Brown on bg 7.44:1, on surface 6.70:1.
 */
 
+/* Metric-matched local fallbacks: text takes the same space before and after the web fonts
+   load (less layout shift). Values from Lora 500 / Be Vietnam Pro 400 vs Georgia / Arial. */
+@font-face {
+  font-family: 'Lora Fallback';
+  src: local('Georgia');
+  size-adjust: 106.36%;
+  ascent-override: 94.58%;
+  descent-override: 25.76%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro Fallback';
+  src: local('Arial'), local('Helvetica');
+  size-adjust: 110.14%;
+  ascent-override: 90.8%;
+  descent-override: 24.06%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* Colors: wood tones, brown for actions, green for identity */
   --color-bg: #f7f2ea;
@@ -29,8 +49,8 @@
   --color-placeholder-ink: #2b1d14;
 
   /* Fonts */
-  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Lora', 'Lora Fallback', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Be Vietnam Pro', 'Be Vietnam Pro Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Type scale (fluid) */
   --text-xs: 0.75rem;

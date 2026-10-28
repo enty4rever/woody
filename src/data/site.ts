@@ -15,6 +15,13 @@ export const site = {
   /** Label on every product image (all are renderings). */
   rendering: 'Rendering',
   announcement: 'Collection preview · Not taking orders yet.',
+  /** First link on every page, visible on keyboard focus. */
+  skipLink: 'Skip to content',
+  seo: {
+    /** Preview site: keep search engines out. Set to false at launch. */
+    noindex: true,
+    ogType: 'website',
+  },
   header: {
     menuLabel: 'Menu',
     navLabel: 'Main navigation',
@@ -236,7 +243,7 @@ export const site = {
         frontDesc: 'The space between two walls, with arrows for width (W) across and height (H) from floor to top.',
         sideTitle: 'Cabinet space, side view',
         sideDesc:
-          'The cabinet against the back wall with an arrow for depth (D), and a dashed area in front marked front clearance: the room needed to pull out the drawers.',
+          'The cabinet against the back wall, with a dashed area in front marked front clearance: the room needed to pull out the drawers. The depth arrow (D) runs from the wall to the outer edge of that dashed area.',
         front: 'Front view',
         side: 'Side view',
         wall: 'Wall',
