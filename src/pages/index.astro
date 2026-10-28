@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import ProductCard from '../components/ProductCard.astro';
 import PlaceholderBadge from '../components/PlaceholderBadge.astro';
 import RenderingTag from '../components/RenderingTag.astro';
+import Render from '../components/Render.astro';
 import { products } from '../data/products';
 import { site } from '../data/site';
 
@@ -23,11 +24,12 @@ const stepNumber = (i: number) => String(i + 1).padStart(2, '0');
       </div>
     </div>
     <div class="hero-media">
-      <img
-        src={hero.image.src}
+      <Render
+        file={hero.image.file}
         alt={hero.image.alt}
-        width={hero.image.width}
-        height={hero.image.height}
+        sizes="(min-width: 1280px) 560px, (min-width: 900px) 50vw, 100vw"
+        loading="eager"
+        fetchpriority="high"
       />
       <PlaceholderBadge isPlaceholder={site.isPlaceholder} />
       <RenderingTag />
@@ -111,7 +113,12 @@ const stepNumber = (i: number) => String(i + 1).padStart(2, '0');
     overflow: hidden;
   }
 
-  .hero-media img {
+  .hero-media {
+    background: var(--color-image-bg);
+  }
+
+  .hero-media :global(img) {
+    display: block;
     width: 100%;
     height: auto;
   }

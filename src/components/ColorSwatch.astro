@@ -1,6 +1,7 @@
 ---
 // Color choice as real radio inputs with labels. On change it updates "Color: <name>"
-// and sends "color-change" so Gallery and DoorToggle swap their images.
+// and sends "color-change" so the Gallery swaps its images. With only one color there is
+// nothing to choose, so it renders nothing (the key facts show "Color: <name>").
 import type { Product } from '../data/products';
 import { site } from '../data/site';
 
@@ -12,6 +13,7 @@ const { product } = Astro.props;
 const name = `color-${product.slug}`;
 ---
 
+{product.colors.length > 1 && (
 <fieldset class="swatch" data-swatch data-product={product.slug}>
   <legend>{site.product.colorLegend}: <span data-color-name>{product.colors[0]?.name}</span></legend>
   <div class="options">
@@ -31,6 +33,7 @@ const name = `color-${product.slug}`;
     ))}
   </div>
 </fieldset>
+)}
 
 <script>
   document.querySelectorAll<HTMLFieldSetElement>('[data-swatch]').forEach((fieldset) => {

@@ -1,11 +1,14 @@
 ---
 // Product gallery: main image, prev/next, thumbnails, arrow keys, swipe on touch.
-// Server renders the first color's images; the script swaps the set on "color-change"
-// (sent by ColorSwatch). Without JS only the first image and the counter show.
+// Every image of every color is rendered on the server as <picture> (AVIF + WebP); the script
+// only shows one slide and one thumbnail row at a time. Slides after the first load lazily,
+// so hidden ones cost nothing until shown. "color-change" (sent by ColorSwatch) picks the set.
+// Without JS only the first image and the counter show.
 import type { Product } from '../data/products';
 import { site } from '../data/site';
 import PlaceholderBadge from './PlaceholderBadge.astro';
 import RenderingTag from './RenderingTag.astro';
+import Render from './Render.astro';
 
 interface Props {
   product: Product;
@@ -13,9 +16,10 @@ interface Props {
 
 const { product } = Astro.props;
 const first = product.colors[0];
-const images = first?.images ?? [];
-const sets = Object.fromEntries(product.colors.map((c) => [c.id, c.images]));
+const count = first?.images.length ?? 0;
 const labels = site.product.gallery;
+/** Gallery column: full width on mobile, ~55% of the 1200px container from 900px. */
+const SIZES = '(min-width: 1280px) 640px, (min-width: 900px) 55vw, 100vw';
 ---
 
 <section
@@ -23,89 +27,82 @@ const labels = site.product.gallery;
   data-gallery
   data-product={product.slug}
   data-color={first?.id}
-  data-sets={JSON.stringify(sets)}
   aria-label={labels.label}
   aria-roledescription="carousel"
   tabindex="0"
 >
   <div class="stage">
-    {images[0] && (
-      <img data-main src={images[0].src} alt={images[0].alt} width="800" height="800" />
+    {product.colors.map((color, c) =>
+      color.images.map((image, i) => (
+        <div class="slide" data-slide={i} data-color={color.id} hidden={c > 0 || i > 0}>
+          <Render
+            file={image.file}
+            alt={image.alt}
+            sizes={SIZES}
+            loading={c === 0 && i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={c === 0 && i === 0 ? 'high' : undefined}
+          />
+        </div>
+      )),
     )}
     <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
-    <RenderingTag counter={`1/${images.length}`} />
-    <button type="button" class="nav prev" data-step="-1" aria-label={labels.prev} hidden={images.length < 2}>
+    <RenderingTag counter={`1/${count}`} />
+    <button type="button" class="nav prev" data-step="-1" aria-label={labels.prev} hidden={count < 2}>
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
     </button>
-    <button type="button" class="nav next" data-step="1" aria-label={labels.next} hidden={images.length < 2}>
+    <button type="button" class="nav next" data-step="1" aria-label={labels.next} hidden={count < 2}>
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" /></svg>
     </button>
   </div>
-  <ul class="thumbs" data-thumbs>
-    {images.map((image, i) => (
-      <li>
-        <button type="button" data-thumb={i} aria-current={i === 0 ? 'true' : undefined}>
-          <img src={image.src} alt={image.alt} width="160" height="160" loading="lazy" />
-        </button>
-      </li>
-    ))}
-  </ul>
+  {product.colors.map((color, c) => (
+    <ul class="thumbs" data-thumbs={color.id} hidden={c > 0}>
+      {color.images.map((image, i) => (
+        <li>
+          <button type="button" data-thumb={i} aria-label={`${labels.thumb} ${i + 1}`} aria-current={i === 0 ? 'true' : undefined}>
+            <Render file={image.file} alt="" sizes="80px" widths={[160]} />
+          </button>
+        </li>
+      ))}
+    </ul>
+  ))}
 </section>
 
 <script>
-  type Image = { src: string; alt: string };
   /** Horizontal distance (px) a swipe must travel to change the image. */
   const SWIPE_MIN = 40;
 
   document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
-    const sets: Record<string, Image[]> = JSON.parse(root.dataset.sets ?? '{}');
     const stage = root.querySelector<HTMLElement>('.stage');
-    const main = root.querySelector<HTMLImageElement>('[data-main]');
     const counter = root.querySelector<HTMLElement>('[data-counter]');
-    const thumbs = root.querySelector<HTMLUListElement>('[data-thumbs]');
     const navButtons = root.querySelectorAll<HTMLButtonElement>('[data-step]');
-    if (!stage || !main || !thumbs) return;
+    if (!stage) return;
 
-    let images = sets[root.dataset.color ?? ''] ?? [];
+    const slidesOf = (color: string) =>
+      [...stage.querySelectorAll<HTMLElement>('[data-slide]')].filter((s) => s.dataset.color === color);
+    let slides = slidesOf(root.dataset.color ?? '');
     let index = 0;
 
-    const show = (i: number) => {
-      if (images.length === 0) return;
-      index = (i + images.length) % images.length;
-      main.src = images[index].src;
-      main.alt = images[index].alt;
-      if (counter) counter.textContent = `${index + 1}/${images.length}`;
-      thumbs.querySelectorAll('button').forEach((button, j) => {
-        if (j === index) button.setAttribute('aria-current', 'true');
-        else button.removeAttribute('aria-current');
-      });
-    };
+    const thumbsOf = (color: string) => root.querySelector<HTMLUListElement>(`[data-thumbs="${color}"]`);
 
-    const renderThumbs = () => {
-      thumbs.replaceChildren(
-        ...images.map((image, i) => {
-          const li = document.createElement('li');
-          const button = document.createElement('button');
-          const img = document.createElement('img');
-          button.type = 'button';
-          button.dataset.thumb = String(i);
-          img.src = image.src;
-          img.alt = image.alt;
-          img.width = 160;
-          img.height = 160;
-          button.append(img);
-          li.append(button);
-          return li;
-        }),
-      );
-      navButtons.forEach((button) => (button.hidden = images.length < 2));
+    const show = (i: number) => {
+      if (slides.length === 0) return;
+      index = (i + slides.length) % slides.length;
+      stage.querySelectorAll<HTMLElement>('[data-slide]').forEach((slide) => (slide.hidden = true));
+      slides[index].hidden = false;
+      if (counter) counter.textContent = `${index + 1}/${slides.length}`;
+      thumbsOf(root.dataset.color ?? '')
+        ?.querySelectorAll('button')
+        .forEach((button, j) => {
+          if (j === index) button.setAttribute('aria-current', 'true');
+          else button.removeAttribute('aria-current');
+        });
     };
 
     navButtons.forEach((button) =>
       button.addEventListener('click', () => show(index + Number(button.dataset.step))),
     );
 
-    thumbs.addEventListener('click', (event) => {
+    root.addEventListener('click', (event) => {
       const button = (event.target as Element).closest<HTMLButtonElement>('[data-thumb]');
       if (button) show(Number(button.dataset.thumb));
     });
@@ -135,10 +132,13 @@ const labels = site.product.gallery;
 
     document.addEventListener('color-change', (event) => {
       const { product, color } = (event as CustomEvent<{ product: string; color: string }>).detail;
-      if (product !== root.dataset.product || !sets[color]) return;
+      const next = slidesOf(color);
+      if (product !== root.dataset.product || next.length === 0) return;
+      thumbsOf(root.dataset.color ?? '')?.setAttribute('hidden', '');
+      thumbsOf(color)?.removeAttribute('hidden');
       root.dataset.color = color;
-      images = sets[color];
-      renderThumbs();
+      slides = next;
+      navButtons.forEach((button) => (button.hidden = slides.length < 2));
       show(0);
     });
   });
@@ -166,7 +166,17 @@ const labels = site.product.gallery;
     user-select: none;
   }
 
-  .stage img {
+  /* 1:1 white frame; the render is never cropped */
+  .slide {
+    position: absolute;
+    inset: 0;
+  }
+
+  .slide[hidden] {
+    display: none;
+  }
+
+  .stage :global(img) {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -230,7 +240,11 @@ const labels = site.product.gallery;
     border-color: var(--color-green);
   }
 
-  .thumbs img {
+  .thumbs[hidden] {
+    display: none;
+  }
+
+  .thumbs :global(img) {
     width: 100%;
     height: auto;
     aspect-ratio: 1 / 1;

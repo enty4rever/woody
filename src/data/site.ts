@@ -57,11 +57,10 @@ export const site = {
       title: '[SAMPLE] Main home page headline',
       intro:
         '[SAMPLE] Two to three lines introducing the brand and its two wood pieces. Say briefly what they are, what they are made of and who they are for.',
+      /** File name in src/assets/products/ (resolved by src/lib/images.ts). */
       image: {
-        src: '/images/placeholder/cabinet-open.svg',
-        alt: 'Rendering: [SAMPLE] Wood cabinet with doors open',
-        width: 800,
-        height: 1000,
+        file: 'cabinet-room',
+        alt: 'Rendering: Cabinet in a bright room, styled with a plant, glassware and ceramics',
       },
       primary: { label: 'Explore the collection', href: '/collection' } as SiteLink,
       secondary: { label: 'How to measure', href: '/fit-and-care' } as SiteLink,

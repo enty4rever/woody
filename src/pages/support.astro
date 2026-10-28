@@ -1,13 +1,16 @@
 ---
-// Support: assembly (guide not ready yet), anchoring the cabinet, contact. Email only plus a demo phone line.
+// Support: assembly renders for both products, anchoring the cabinet, contact. Email only plus a demo phone line.
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
-import { products } from '../data/products';
+import Render from '../components/Render.astro';
+import RenderingTag from '../components/RenderingTag.astro';
+import { products, assemblyImages } from '../data/products';
 import { site } from '../data/site';
 
 const copy = site.support;
 const contact = copy.contactSupport;
 const cabinet = products.find((p) => p.type === 'cabinet');
+const guides = products.map((product) => ({ product, image: assemblyImages[product.type] }));
 const mailto = `mailto:${site.contact.email}?subject=${encodeURIComponent(contact.subject)}`;
 ---
 
@@ -24,6 +27,17 @@ const mailto = `mailto:${site.contact.email}?subject=${encodeURIComponent(contac
       <section id={copy.assembly.id} aria-labelledby={`${copy.assembly.id}-title`}>
         <h2 id={`${copy.assembly.id}-title`}>{copy.assembly.title}</h2>
         <p>{copy.assembly.text}</p>
+        <div class="guides">
+          {guides.map(({ product, image }) => (
+            <figure class="guide">
+              <div class="frame">
+                <Render file={image.file} alt={image.alt} sizes="(min-width: 720px) 344px, 100vw" />
+                <RenderingTag />
+              </div>
+              <figcaption>{product.name}</figcaption>
+            </figure>
+          ))}
+        </div>
       </section>
 
       {cabinet && (
@@ -85,6 +99,44 @@ const mailto = `mailto:${site.contact.email}?subject=${encodeURIComponent(contac
 
   h2 {
     font-size: var(--text-xl);
+  }
+
+  .guides {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-2);
+  }
+
+  .guide {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  /* 1:1 white frame; the render is never cropped */
+  .frame {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-image-bg);
+    overflow: hidden;
+  }
+
+  .frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .guide figcaption {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 720px) {
+    .guides {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   /* Green dot = identity icon (same as the product key facts) */

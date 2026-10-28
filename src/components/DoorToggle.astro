@@ -1,19 +1,18 @@
 ---
-// Closed / Open view for products with an openImage. The closed view is the front image of
-// the selected color. Without JS both images show side by side and the buttons are hidden.
+// Closed / Open view for products with doorImages. Without JS both images show side by side
+// and the buttons are hidden.
 import type { Product } from '../data/products';
 import { site } from '../data/site';
 import PlaceholderBadge from './PlaceholderBadge.astro';
 import RenderingTag from './RenderingTag.astro';
+import Render from './Render.astro';
 
 interface Props {
   product: Product;
 }
 
 const { product } = Astro.props;
-const closed = product.colors[0]?.images[0];
-const open = product.openImage;
-const fronts = Object.fromEntries(product.colors.map((c) => [c.id, c.images[0]]));
+const { closed, open } = product.doorImages ?? {};
 const labels = site.product.doorView;
 ---
 
@@ -22,8 +21,6 @@ const labels = site.product.doorView;
     class="door-view"
     aria-labelledby="door-view-title"
     data-door-view
-    data-product={product.slug}
-    data-fronts={JSON.stringify(fronts)}
   >
     <header class="head">
       <p class="eyebrow">{labels.eyebrow}</p>
@@ -35,8 +32,12 @@ const labels = site.product.doorView;
         <button type="button" data-show="open" aria-pressed="false">{labels.open}</button>
       </div>
       <div class="stage">
-        <img class="is-active" data-view="closed" src={closed.src} alt={closed.alt} width="800" height="800" loading="lazy" />
-        <img data-view="open" src={open.src} alt={open.alt} width="800" height="800" loading="lazy" />
+        <div class="view is-active" data-view="closed">
+          <Render file={closed.file} alt={closed.alt} sizes="(min-width: 1280px) 640px, (min-width: 900px) 55vw, 100vw" />
+        </div>
+        <div class="view" data-view="open">
+          <Render file={open.file} alt={open.alt} sizes="(min-width: 1280px) 640px, (min-width: 900px) 55vw, 100vw" />
+        </div>
         <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
         <RenderingTag />
       </div>
@@ -46,28 +47,16 @@ const labels = site.product.doorView;
 )}
 
 <script>
-  type Image = { src: string; alt: string };
-
   document.querySelectorAll<HTMLElement>('[data-door-view]').forEach((root) => {
-    const fronts: Record<string, Image> = JSON.parse(root.dataset.fronts ?? '{}');
-    const views = root.querySelectorAll<HTMLImageElement>('[data-view]');
+    const views = root.querySelectorAll<HTMLElement>('[data-view]');
     const buttons = root.querySelectorAll<HTMLButtonElement>('[data-show]');
-    const closedImg = root.querySelector<HTMLImageElement>('[data-view="closed"]');
 
     buttons.forEach((button) =>
       button.addEventListener('click', () => {
         buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
-        views.forEach((img) => img.classList.toggle('is-active', img.dataset.view === button.dataset.show));
+        views.forEach((view) => view.classList.toggle('is-active', view.dataset.view === button.dataset.show));
       }),
     );
-
-    document.addEventListener('color-change', (event) => {
-      const { product, color } = (event as CustomEvent<{ product: string; color: string }>).detail;
-      const front = fronts[color];
-      if (product !== root.dataset.product || !front || !closedImg) return;
-      closedImg.src = front.src;
-      closedImg.alt = front.alt;
-    });
   });
 </script>
 
@@ -104,12 +93,16 @@ const labels = site.product.doorView;
     overflow: hidden;
   }
 
-  .stage img {
-    width: 100%;
-    height: auto;
+  /* 1:1 white frame; the render is never cropped */
+  .view {
     aspect-ratio: 1 / 1;
-    object-fit: contain;
     background: var(--color-image-bg);
+  }
+
+  .view :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   /* With JS: one image at a time */
@@ -117,7 +110,7 @@ const labels = site.product.doorView;
     grid-template-columns: 1fr;
   }
 
-  :global(html.js) .stage img:not(.is-active) {
+  :global(html.js) .stage .view:not(.is-active) {
     display: none;
   }
 

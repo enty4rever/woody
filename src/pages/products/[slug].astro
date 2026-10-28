@@ -59,7 +59,7 @@ const keyFacts: Fact[] = [
             <span class="amount">{formatUsd(product.priceUsd)}</span>
             <span class="price-note">{copy.priceNote}</span>
           </p>
-          {product.colors.length > 1 && <ColorSwatch product={product} />}
+          <ColorSwatch product={product} />
           <ul class="facts" aria-label={facts.label}>
             {keyFacts.map((fact) => (
               <li>
@@ -77,7 +77,7 @@ const keyFacts: Fact[] = [
       </StickyInfo>
     </div>
 
-    {product.openImage && (
+    {product.doorImages && (
       <section class="block">
         <DoorToggle product={product} />
       </section>

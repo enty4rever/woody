@@ -174,7 +174,7 @@ export const products: Product[] = [
         hex: '#5a3a26',
         images: [
           img('shelf-front', 'Corner shelf, front view'),
-          img('shelf-styled', 'Corner shelf styled with books and decor'),
+          img('shelf-styled', 'Corner shelf styled with books, a framed photo, a plant and ceramics'),
           img('shelf-side', 'Corner shelf, side view'),
           img('shelf-views', 'Corner shelf from several angles, with a top view and a close-up of the inlay'),
           img('shelf-dimensions', `Corner shelf dimensions diagram. ${SHELF_DIMENSIONS_TEXT}`),

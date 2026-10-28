@@ -7,6 +7,7 @@ import { formatUsd } from '../lib/format';
 import { formatDimensions } from '../lib/units';
 import PlaceholderBadge from './PlaceholderBadge.astro';
 import RenderingTag from './RenderingTag.astro';
+import Render from './Render.astro';
 
 interface Props {
   product: Product;
@@ -22,7 +23,9 @@ const image = product.colors[0]?.images[0];
 
 <article class="product-card">
   <a href={href} class="media" tabindex="-1" aria-hidden="true">
-    {image && <img src={image.src} alt={image.alt} width="800" height="800" loading="lazy" />}
+    {image && (
+      <Render file={image.file} alt={image.alt} sizes="(min-width: 1280px) 560px, (min-width: 640px) 50vw, 100vw" />
+    )}
     <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
     <RenderingTag />
   </a>
@@ -60,7 +63,7 @@ const image = product.colors[0]?.images[0];
     background: var(--color-image-bg);
   }
 
-  .media img {
+  .media :global(img) {
     width: 100%;
     height: 100%;
     object-fit: contain;

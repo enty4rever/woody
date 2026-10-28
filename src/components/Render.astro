@@ -27,6 +27,7 @@ const src = productAsset(file);
   widths={imageWidths(src.width, widths)}
   sizes={sizes}
   formats={['avif', 'webp']}
+  fallbackFormat="webp"
   loading={loading}
   decoding="async"
   fetchpriority={fetchpriority}
