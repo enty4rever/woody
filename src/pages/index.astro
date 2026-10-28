@@ -1,100 +1,208 @@
 ---
 import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import PlaceholderBadge from '../components/PlaceholderBadge.astro';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+const { meta, hero, steps, story } = site.home;
+const section = site.home.products;
+const stepNumber = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
-<Base title="Woody | Tủ và kệ gỗ khảm xà cừ">
-  <h1 class="visually-hidden">Woody</h1>
-
-  <!-- TEMP color demo: remove in Phase 3 -->
-  <section class="container demo" aria-label="Bản xem thử màu (tạm thời)">
-    <p class="eyebrow">Xem thử màu</p>
-    <h2>Nâu cho hành động, xanh cho nhận diện</h2>
-    <div class="actions">
-      <a href="/collection" class="btn btn-primary">Nút chính</a>
-      <a href="/fit-and-care" class="btn btn-outline">Nút phụ</a>
+<Base title={meta.title} description={meta.description}>
+  <section class="container hero">
+    <div class="hero-text">
+      <p class="eyebrow">{hero.eyebrow}</p>
+      <h1>{hero.title}</h1>
+      <p class="intro">{hero.intro}</p>
+      <div class="actions">
+        <a href={hero.primary.href} class="btn btn-primary">{hero.primary.label}</a>
+        <a href={hero.secondary.href} class="text-link">{hero.secondary.label}</a>
+      </div>
     </div>
-    <a href="/collection" class="card">
-      <p class="eyebrow">Thẻ mẫu</p>
-      <h3>Rê chuột để thấy viền xanh</h3>
-      <p class="card-text">Viền mặc định màu --color-border, chuyển sang --color-green khi hover hoặc focus.</p>
-    </a>
+    <div class="hero-media">
+      <img
+        src={hero.image.src}
+        alt={hero.image.alt}
+        width={hero.image.width}
+        height={hero.image.height}
+      />
+      <PlaceholderBadge isPlaceholder={site.isPlaceholder} />
+    </div>
+  </section>
+
+  <section class="container block" aria-labelledby="products-title">
+    <header class="block-head">
+      <p class="eyebrow">{section.eyebrow}</p>
+      <h2 id="products-title">{section.title}</h2>
+    </header>
+    <div class="product-grid">
+      {products.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+
+  <section class="container block" aria-labelledby="steps-title">
+    <header class="block-head">
+      <p class="eyebrow">{steps.eyebrow}</p>
+      <h2 id="steps-title">{steps.title}</h2>
+    </header>
+    <ol class="steps">
+      {steps.items.map((step, i) => (
+        <li>
+          <span class="step-number" aria-hidden="true">{stepNumber(i)}</span>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container block">
+    <figure class="story">
+      <blockquote>
+        <p>{story.quote}</p>
+      </blockquote>
+      <figcaption>{story.cite}</figcaption>
+      <a href={story.link.href} class="text-link">{story.link.label} <span aria-hidden="true">→</span></a>
+    </figure>
   </section>
 </Base>
 
 <style>
-  .demo {
-    padding-block: var(--space-7);
+  /* Hero: text on top, image below; side by side from 900px */
+  .hero {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-6);
+    padding-block: var(--space-6) var(--space-7);
+  }
+
+  .hero-text {
+    display: grid;
+    gap: var(--space-4);
     justify-items: start;
   }
 
-  .eyebrow {
-    color: var(--color-green);
-    font-size: var(--text-xs);
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .intro {
+    max-width: 36rem;
+    color: var(--color-muted);
+    font-size: var(--text-lg);
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    margin-top: var(--space-2);
   }
 
-  .btn {
-    display: inline-block;
-    padding: var(--space-3) var(--space-5);
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
+  .text-link {
     font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    text-decoration: underline;
   }
 
-  .btn-primary {
-    background: var(--color-accent);
-    color: var(--color-bg);
+  .hero-media {
+    position: relative;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
 
-  .btn-primary:hover {
-    background: var(--color-accent-hover);
-    color: var(--color-bg);
+  .hero-media img {
+    width: 100%;
+    height: auto;
   }
 
-  .btn-outline {
-    background: transparent;
-    border-color: var(--color-green);
-    color: var(--color-green);
+  /* Shared section spacing */
+  .block {
+    padding-block: var(--space-7);
   }
 
-  .btn-outline:hover {
-    border-color: var(--color-green-hover);
-    color: var(--color-green-hover);
-  }
-
-  .card {
+  .block-head {
     display: grid;
     gap: var(--space-2);
-    max-width: 28rem;
-    padding: var(--space-5);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-text);
-    text-decoration: none;
-    transition: border-color 0.15s;
+    margin-bottom: var(--space-6);
   }
 
-  .card:hover,
-  .card:focus-visible {
-    border-color: var(--color-green);
-    color: var(--color-text);
+  .product-grid {
+    display: grid;
+    gap: var(--space-5);
   }
 
-  .card-text {
+  /* Steps: green numbers and thin green rule = identity, no green fill */
+  .steps {
+    display: grid;
+    gap: var(--space-6);
+    list-style: none;
+    padding: 0;
+  }
+
+  .steps li {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 2px solid var(--color-green);
+  }
+
+  .step-number {
+    color: var(--color-green);
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .steps p {
+    color: var(--color-muted);
+  }
+
+  /* Story teaser */
+  .story {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-block: var(--space-7);
+    border-block: 1px solid var(--color-border);
+    text-align: center;
+  }
+
+  .story blockquote {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .story figcaption {
     color: var(--color-muted);
     font-size: var(--text-sm);
+  }
+
+  @media (min-width: 640px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .block {
+      padding-block: var(--space-8);
+    }
+
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--space-8);
+      padding-block: var(--space-8);
+    }
   }
 </style>

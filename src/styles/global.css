@@ -71,6 +71,47 @@ a:hover {
   padding-inline: var(--gutter);
 }
 
+/* Small uppercase label above headings. Green = identity. */
+.eyebrow {
+  color: var(--color-green);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Buttons: brown solid = primary action, green outline = secondary */
+.btn {
+  display: inline-block;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-bg);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-green-hover);
+  color: var(--color-green-hover);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
