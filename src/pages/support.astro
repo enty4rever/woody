@@ -45,7 +45,7 @@ const mailto = `mailto:${site.contact.email}?subject=${encodeURIComponent(contac
           <p class="eyebrow">{cabinet.name}</p>
           <h2 id={`${copy.anchor.id}-title`}>{copy.anchor.title}</h2>
           {copy.anchor.text.map((text) => <p>{text}</p>)}
-          {cabinet.antiTipKit && <p class="included">{site.product.keyFacts.antiTip}</p>}
+          {cabinet.antiTipKit && <p class="included">{site.product.keyFacts.antiTip(cabinet.antiTipKitType)}</p>}
         </section>
       )}
 

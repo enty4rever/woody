@@ -15,8 +15,8 @@ import Faq from '../../components/Faq.astro';
 import CrossSell from '../../components/CrossSell.astro';
 import { products, type Product } from '../../data/products';
 import { site } from '../../data/site';
-import { formatUsd } from '../../lib/format';
-import { formatDimensions, formatDimensionsCm, formatPounds, formatKg } from '../../lib/units';
+import { formatUsd, formatSize } from '../../lib/format';
+import { formatPounds, formatKg } from '../../lib/units';
 
 export function getStaticPaths() {
   return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
@@ -34,12 +34,12 @@ const helpLinks = site.support.productLinks;
 // Sizes and weight come as an in / cm pair; html[data-unit] shows one (same as SpecTable).
 type Fact = string | { in: string; cm: string };
 const keyFacts: Fact[] = [
-  { in: formatDimensions(product.dimensionsCm), cm: formatDimensionsCm(product.dimensionsCm) },
+  { in: formatSize(product, 'in'), cm: formatSize(product, 'cm') },
   `${facts.wood}: ${product.woodType}`,
   facts.setup[product.setup],
   product.colors.length === 1 ? `${facts.color}: ${product.colors[0].name}` : facts.colors(product.colors.length),
   { in: `${facts.weight}: ${formatPounds(product.weightKg)}`, cm: `${facts.weight}: ${formatKg(product.weightKg)}` },
-  ...(product.antiTipKit ? [facts.antiTip] : []),
+  ...(product.antiTipKit ? [facts.antiTip(product.antiTipKitType)] : []),
 ];
 ---
 

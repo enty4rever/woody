@@ -31,7 +31,6 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 12b | Số ngăn kéo (`drawers`) | ngăn kéo | ___ |
 | 12c | Vách hông nếu khác vật liệu chính, tiếng Anh (`sidePanels`), vd `glass` | | ___ |
 | 13 | Số kệ (`shelves`) | kệ | ___ |
-| 14 | Số ngăn (`compartments`) | ngăn | ___ |
 | 15 | Cách lắp đặt (`setup`): đứng tự do / treo tường | | ___ |
 | 16 | Có bộ chống lật? (`antiTipKit`): có / không | | ___ |
 | 17 | Bảo quản: xem bên dưới (`care`) | | |
@@ -70,7 +69,7 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 
 ---
 
-## 2. Kệ gỗ (slug: `wood-shelf`)
+## 2. Kệ gỗ (slug: `wood-corner-shelf`)
 
 | # | Field | Đơn vị | Giá trị |
 |---|---|---|---|
@@ -89,7 +88,6 @@ Khi đã có đủ số liệu, Claude sẽ thay dữ liệu `[SAMPLE]` và đ�
 | 12b | Số ngăn kéo (`drawers`) | ngăn kéo | ___ |
 | 12d | Hình dáng, tiếng Anh (`shape`), vd `quarter-round corner` (kệ góc: fit checker đo dọc theo từng bức tường) | | ___ |
 | 13 | Số kệ (`shelves`) | kệ | ___ |
-| 14 | Số ngăn (`compartments`) | ngăn | ___ |
 | 15 | Cách lắp đặt (`setup`): đứng tự do / treo tường | | ___ |
 | 16 | Có bộ chống lật? (`antiTipKit`): có / không | | ___ |
 | 17 | Bảo quản: xem bên dưới (`care`) | | |

@@ -2,7 +2,7 @@
 // "Will it fit?": the visitor types the size of their space, each dimension gets a written
 // result (never color alone). Unit follows html[data-unit] (SpecTable radios); a unit typed
 // in the box ("60 cm") wins. Math lives in src/lib/fit.ts. Without JS the form is hidden.
-import type { Product } from '../data/products';
+import { isCorner, type Product } from '../data/products';
 import { site } from '../data/site';
 import { formatInches, formatCm } from '../lib/units';
 
@@ -13,7 +13,7 @@ interface Props {
 const { product } = Astro.props;
 const copy = site.product.fit;
 const units = site.product.units;
-const corner = product.shape === 'quarter-round corner';
+const corner = isCorner(product);
 const labels = corner ? copy.cornerLabels : copy.labels;
 const id = (part: string) => `fit-${product.slug}-${part}`;
 const dims = ['width', 'depth', 'height'] as const;

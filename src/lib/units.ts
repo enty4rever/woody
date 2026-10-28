@@ -45,8 +45,14 @@ export const formatInchMark = (cm: number, round: 'up' | 'down'): string =>
 /** 45 → "100 lb". */
 export const formatPounds = (kg: number): string => `${kgToLb(kg)}${NBSP}lb`;
 
-/** Stored value as is: 80 → "80 cm". */
-export const formatCm = (cm: number): string => `${cm}${NBSP}cm`;
+/** Rounds up to one decimal: 81.28 → 81.3, 30 → 30. */
+const tenthUp = (n: number): number => Math.ceil(n * 10 - EPSILON) / 10;
+
+/** Lengths are stored as inches × 2.54, so cm is shown rounded up to 0.1: 81.28 → "81.3 cm", 80 → "80 cm". */
+export const formatCm = (cm: number): string => `${tenthUp(cm)}${NBSP}cm`;
+
+/** For sizes given to a tenth of an inch (21.2 in), rounded up to 0.1 in: 53.848 → "21.2 in". */
+export const formatInchesTenth = (cm: number): string => `${tenthUp(cm / CM_PER_INCH)}${NBSP}in`;
 
 /** Stored value as is: 45 → "45 kg". */
 export const formatKg = (kg: number): string => `${kg}${NBSP}kg`;
@@ -59,6 +65,6 @@ export const formatDimensions = (d: { width: number; depth: number; height: numb
     `${inchNumber(d.height)}${INCH}H`,
   ].join(' × ');
 
-/** Stored values, metric listing style: "80 cm W × 40 cm D × 180 cm H". */
+/** Metric listing style: "80 cm W × 40 cm D × 180 cm H". */
 export const formatDimensionsCm = (d: { width: number; depth: number; height: number }): string =>
   [`${formatCm(d.width)}${NBSP}W`, `${formatCm(d.depth)}${NBSP}D`, `${formatCm(d.height)}${NBSP}H`].join(' × ');

@@ -3,7 +3,7 @@
 // lines use the color tokens: objects in text color, measurements in green (identity).
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
-import { products } from '../data/products';
+import { products, isCorner } from '../data/products';
 import { site } from '../data/site';
 
 const copy = site.fitCare;
@@ -13,10 +13,9 @@ const cor = measure.corner;
 const abbr = measure.abbr;
 const along = site.product.fit.cornerLabels;
 
-const isCorner = (shape?: string) => shape === 'quarter-round corner';
 const guides = [
-  { key: 'cabinet', title: cab.title, text: cab.text, products: products.filter((p) => !isCorner(p.shape)) },
-  { key: 'corner', title: cor.title, text: cor.text, products: products.filter((p) => isCorner(p.shape)) },
+  { key: 'cabinet', title: cab.title, text: cab.text, products: products.filter((p) => !isCorner(p)) },
+  { key: 'corner', title: cor.title, text: cor.text, products: products.filter((p) => isCorner(p)) },
 ] as const;
 ---
 

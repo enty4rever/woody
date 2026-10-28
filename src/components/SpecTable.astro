@@ -4,7 +4,7 @@
 // Without JS inches show and the radios are hidden.
 import type { Product } from '../data/products';
 import { site } from '../data/site';
-import { formatInches, formatPounds, formatCm, formatKg } from '../lib/units';
+import { formatInches, formatInchesTenth, formatPounds, formatCm, formatKg } from '../lib/units';
 
 interface Props {
   product: Product;
@@ -19,6 +19,7 @@ type Measure = { in: string; cm: string };
 type Row = { label: string; value: string | Measure };
 
 const length = (cm: number): Measure => ({ in: formatInches(cm), cm: formatCm(cm) });
+const lengthTenth = (cm: number): Measure => ({ in: formatInchesTenth(cm), cm: formatCm(cm) });
 const mass = (kg: number): Measure => ({ in: formatPounds(kg), cm: formatKg(kg) });
 const count = (n: number): string => (n === 0 ? copy.none : String(n));
 const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
@@ -28,24 +29,47 @@ const big = (['width', 'depth', 'height'] as const).map((dim) => ({
   value: length(product.dimensionsCm[dim]),
 }));
 
+/** "4, about 14.3 in apart" in both units, or "3 (2 fixed wood shelves …)". */
+const shelves = (): string | Measure => {
+  const n = String(product.shelves);
+  if (product.shelfSpacingCm) {
+    const gap = lengthTenth(product.shelfSpacingCm);
+    return { in: copy.spacing(n, gap.in), cm: copy.spacing(n, gap.cm) };
+  }
+  return product.shelfDetail ? `${n} (${product.shelfDetail})` : n;
+};
+
+const withDetail = (n: number, detail?: string): string => (n > 0 && detail ? `${n}, ${detail}` : count(n));
+const optional = (label: string, value?: string | Measure): Row[] => (value ? [{ label, value }] : []);
+
 const table: Row[] = [
   { label: rows.wood, value: product.woodType },
   { label: rows.finish, value: product.finish },
   { label: rows.colors, value: product.colors.map((c) => c.name).join(', ') },
-  ...(product.shape ? [{ label: rows.shape, value: capitalize(product.shape) }] : []),
+  { label: rows.inlay, value: product.inlay },
+  ...optional(rows.shape, product.shape && capitalize(product.shape)),
+  ...optional(rows.frontWidth, product.frontWidthCm ? lengthTenth(product.frontWidthCm) : undefined),
+  { label: rows.doors, value: withDetail(product.doors, product.doorStyle) },
+  ...optional(rows.sidePanels, product.sidePanels && capitalize(product.sidePanels)),
   {
-    label: rows.doors,
-    value: product.doors > 0 && product.doorStyle ? `${product.doors}, ${product.doorStyle}` : count(product.doors),
+    label: rows.drawers,
+    value: withDetail(product.drawers, product.drawerFronts && `${product.drawerFronts} ${copy.fronts}`),
   },
-  { label: rows.drawers, value: count(product.drawers) },
-  ...(product.sidePanels ? [{ label: rows.sidePanels, value: capitalize(product.sidePanels) }] : []),
-  { label: rows.shelves, value: count(product.shelves) },
-  { label: rows.compartments, value: count(product.compartments) },
+  { label: rows.shelves[product.type], value: shelves() },
+  ...optional(rows.legs, product.legs),
+  ...optional(rows.hardware, product.hardware),
   { label: rows.weight, value: mass(product.weightKg) },
-  { label: rows.maxLoad, value: mass(product.maxLoadPerShelfKg) },
+  { label: rows.maxLoad[product.type], value: mass(product.maxLoadPerShelfKg) },
   { label: rows.setup, value: site.product.keyFacts.setup[product.setup] },
-  { label: rows.antiTip, value: product.antiTipKit ? copy.yes : copy.no },
-  ...(product.frontClearanceCm ? [{ label: rows.frontClearance, value: length(product.frontClearanceCm) }] : []),
+  {
+    label: rows.antiTip,
+    value: product.antiTipKit ? [copy.yes, product.antiTipKitType].filter(Boolean).join(', ') : copy.no,
+  },
+  ...optional(rows.frontClearance, product.frontClearanceCm ? length(product.frontClearanceCm) : undefined),
+  { label: rows.assembly, value: product.assembly.method },
+  { label: rows.assemblyTime, value: `${product.assembly.time}. ${product.assembly.people}.` },
+  { label: rows.guide, value: product.assembly.guide },
+  { label: rows.warranty, value: product.warranty },
 ];
 ---
 

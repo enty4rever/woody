@@ -35,7 +35,7 @@ Claude Code cannot invent these well. Prepare them first.
   - name, short line (1 sentence), price (proposed, USD with cents), all in English
   - exterior W × D × H in cm, weight and max load per shelf in kg (the site shows inches / lb)
   - wood type, finish, available colors
-  - number of doors / shelves / compartments
+  - number of doors / shelves / drawers
   - setup: free-standing or wall-mounted, anti-tip kit yes/no
   - care instructions (3–4 lines)
   - 5–6 FAQ items
@@ -105,7 +105,7 @@ Sections in order:
 - **Done when:** looks good on mobile first, then desktop.
 
 ### Phase 3.5 — US market (done)
-English copy, `[SAMPLE]` marker, `priceUsd` + `formatUsd`, `src/lib/units.ts` (inch/lb default), slugs `wood-cabinet` / `wood-shelf`, footer: "Planned delivery: United States only." and "Product images are renderings."
+English copy, `[SAMPLE]` marker, `priceUsd` + `formatUsd`, `src/lib/units.ts` (inch/lb default), slugs `wood-cabinet` / `wood-corner-shelf` (renamed from `wood-shelf` in Phase 6.6, no redirect), footer: "Planned delivery: United States only." and "Product images are renderings."
 
 ### Phase 4 — Product page (most work)
 1. Breadcrumb

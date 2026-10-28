@@ -114,7 +114,10 @@ export const site = {
         'free-standing': 'Free-standing',
         'wall-mounted': 'Wall-mounted',
       },
-      antiTip: 'Includes an anti-tip wall anchor',
+      /** 'heavy-duty' → "Includes a heavy-duty anti-tip kit". */
+      /** Corner pieces: "15″ along each wall × 47″H". */
+      cornerSize: (wall: string, height: string) => `${wall} along each wall × ${height}`,
+      antiTip: (type?: string) => (type ? `Includes a ${type} anti-tip kit` : 'Includes an anti-tip kit'),
     },
     doorView: {
       eyebrow: '[SAMPLE] Door view',
@@ -144,19 +147,32 @@ export const site = {
       rows: {
         wood: 'Wood',
         finish: 'Finish',
-        colors: 'Colors',
+        colors: 'Color',
+        inlay: 'Inlay',
         shape: 'Shape',
+        frontWidth: 'Width across the front',
         doors: 'Doors',
-        drawers: 'Drawers',
         sidePanels: 'Side panels',
-        shelves: 'Shelves',
-        compartments: 'Compartments',
+        drawers: 'Drawers',
+        /** By product.type. */
+        shelves: { cabinet: 'Display levels', shelf: 'Tiers' },
+        legs: 'Legs',
+        hardware: 'Hardware',
         weight: 'Weight',
-        maxLoad: 'Max load per shelf',
+        /** By product.type. */
+        maxLoad: { cabinet: 'Design load per shelf', shelf: 'Design load per tier' },
         setup: 'Setup',
         antiTip: 'Anti-tip kit',
         frontClearance: 'Room in front for drawers',
+        assembly: 'Assembly',
+        assemblyTime: 'Assembly time',
+        guide: 'Instructions',
+        warranty: 'Warranty',
       },
+      /** "4, about 14.3 in apart". */
+      spacing: (count: string, gap: string) => `${count}, about ${gap} apart`,
+      /** Drawers row: "2, black lacquered fronts". */
+      fronts: 'fronts',
       none: 'None',
       yes: 'Included',
       no: 'Not included',
@@ -170,7 +186,7 @@ export const site = {
         depth: 'Depth',
         height: 'Height',
       },
-      /** Shelf with shape 'quarter-round corner': measured along each wall. */
+      /** Corner pieces (isCorner in products.ts): measured along each wall. */
       cornerLabels: {
         width: 'Along wall 1',
         depth: 'Along wall 2',

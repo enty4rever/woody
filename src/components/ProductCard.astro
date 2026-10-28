@@ -3,8 +3,7 @@
 // hidden from Tab and screen readers so the name and button are the only announced links.
 import type { Product } from '../data/products';
 import { site } from '../data/site';
-import { formatUsd } from '../lib/format';
-import { formatDimensions } from '../lib/units';
+import { formatUsd, formatSize } from '../lib/format';
 import PlaceholderBadge from './PlaceholderBadge.astro';
 import RenderingTag from './RenderingTag.astro';
 import Render from './Render.astro';
@@ -34,7 +33,7 @@ const image = product.colors[0]?.images[0];
     <Heading class="name"><a href={href}>{product.name}</a></Heading>
     <p class="line">{product.shortLine}</p>
     <p class="price">{formatUsd(product.priceUsd)}</p>
-    <p class="size">{formatDimensions(product.dimensionsCm)}</p>
+    <p class="size">{formatSize(product, 'in')}</p>
     <a href={href} class="btn btn-outline" aria-label={`${site.home.productCta}: ${product.name}`}>
       {site.home.productCta}
     </a>

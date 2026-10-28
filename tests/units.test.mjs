@@ -1,7 +1,7 @@
 // Run with "npm test". Node strips the TypeScript types from units.ts itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatInches, formatPounds, formatDimensions, formatDimensionsCm } from '../src/lib/units.ts';
+import { formatInches, formatInchesTenth, formatCm, formatPounds, formatDimensions, formatDimensionsCm } from '../src/lib/units.ts';
 
 const NBSP = ' ';
 
@@ -38,4 +38,23 @@ test('cm dimensions use stored values', () => {
     formatDimensionsCm({ width: 80, depth: 40, height: 180 }),
     `80${NBSP}cm${NBSP}W × 40${NBSP}cm${NBSP}D × 180${NBSP}cm${NBSP}H`,
   );
+});
+
+test('inch-based lengths (in × 2.54) show whole inches and cm to 0.1', () => {
+  assert.equal(formatInches(32 * 2.54), `32${NBSP}in`);
+  assert.equal(formatInches(14 * 2.54), `14${NBSP}in`);
+  assert.equal(formatInches(54 * 2.54), `54${NBSP}in`);
+  assert.equal(formatCm(32 * 2.54), `81.3${NBSP}cm`);
+  assert.equal(formatCm(15 * 2.54), `38.1${NBSP}cm`);
+  assert.equal(formatCm(80), `80${NBSP}cm`);
+});
+
+test('tenth-inch sizes keep their decimal', () => {
+  assert.equal(formatInchesTenth(21.2 * 2.54), `21.2${NBSP}in`);
+  assert.equal(formatInchesTenth(14.3 * 2.54), `14.3${NBSP}in`);
+});
+
+test('38.5 kg and 9 kg show as 85 lb and 20 lb', () => {
+  assert.equal(formatPounds(38.5), `85${NBSP}lb`);
+  assert.equal(formatPounds(9), `20${NBSP}lb`);
 });
