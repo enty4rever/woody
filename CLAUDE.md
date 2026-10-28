@@ -1,0 +1,6 @@
+- Stack: Astro static, plain CSS with tokens, vanilla JS only inside components.
+- All product facts come from src/data/products.ts. Never hard-code them in pages.
+- No cart, no checkout, no payment code.
+- Mobile first. Test at 375 px and 1280 px before saying a phase is done.
+- Do only the phase I ask for. List what you changed at the end.
+- Do not invent product specs. If data is missing, leave a TODO and tell me.
