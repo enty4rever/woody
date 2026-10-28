@@ -4,7 +4,7 @@
 // in the box ("60 cm") wins. Math lives in src/lib/fit.ts. Without JS the form is hidden.
 import { isCorner, type Product } from '../data/products';
 import { site } from '../data/site';
-import { formatInches, formatCm } from '../lib/units';
+import { formatInchMark, formatCm } from '../lib/units';
 
 interface Props {
   product: Product;
@@ -26,6 +26,12 @@ const templates = {
   tooSmall: copy.tooSmall('{x}'),
   error: copy.error,
   labels,
+  clearance: product.frontClearanceCm
+    ? {
+        in: copy.clearanceNote(formatInchMark(product.frontClearanceCm, 'up'), formatInchMark(copy.comfortCm, 'up')),
+        cm: copy.clearanceNote(formatCm(product.frontClearanceCm), formatCm(copy.comfortCm)),
+      }
+    : undefined,
 };
 ---
 
@@ -64,12 +70,6 @@ const templates = {
         </div>
       ))}
     </div>
-    {product.frontClearanceCm && (
-      <p class="hint">
-        <span data-u="in">{copy.clearanceNote(formatInches(product.frontClearanceCm))}</span>
-        <span data-u="cm">{copy.clearanceNote(formatCm(product.frontClearanceCm))}</span>
-      </p>
-    )}
     <button type="submit" class="btn btn-outline">{copy.submit}</button>
     <div class="results" aria-live="polite" data-results>
       <ul hidden aria-label={copy.resultsLabel}></ul>
@@ -78,7 +78,16 @@ const templates = {
 </section>
 
 <script>
-  import { parseLength, lengthToCm, checkFit, describeFit, formatInputLength, type Dimension, type Unit } from '../lib/fit';
+  import {
+    parseLength,
+    lengthToCm,
+    checkFit,
+    fitAdvisories,
+    describeFit,
+    formatInputLength,
+    type Dimension,
+    type Unit,
+  } from '../lib/fit';
 
   type Copy = {
     fits: string;
@@ -87,6 +96,7 @@ const templates = {
     tooSmall: string;
     error: string;
     labels: Record<Dimension, string>;
+    clearance?: Record<Unit, string>;
   };
 
   const DIMS: Dimension[] = ['width', 'depth', 'height'];
@@ -150,7 +160,19 @@ const templates = {
         li.append(mark, label, text);
         return li;
       });
-      list.replaceChildren(...items);
+      // Advice only: no ✓ / ✕. The mark column stays empty so the text lines up.
+      const notes = fitAdvisories(product).flatMap((advisory) => {
+        const text = advisory.kind === 'frontClearance' ? copy.clearance?.[unit] : undefined;
+        if (!text) return [];
+        const li = document.createElement('li');
+        li.className = 'is-note';
+        const mark = document.createElement('span');
+        mark.className = 'mark';
+        mark.setAttribute('aria-hidden', 'true');
+        li.append(mark, text);
+        return [li];
+      });
+      list.replaceChildren(...items, ...notes);
       list.hidden = false;
     };
 
@@ -303,6 +325,11 @@ const templates = {
 
   .results :global(.is-short .mark) {
     color: var(--color-text);
+  }
+
+  .results :global(.is-note) {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
   }
 
   @media (min-width: 640px) {

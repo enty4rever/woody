@@ -199,7 +199,11 @@ export const site = {
       lessThan: (amount: string) => `Fits, less than ${amount} to spare`,
       exact: 'Fits, no room to spare',
       tooSmall: (amount: string) => `Too small by ${amount}`,
-      clearanceNote: (amount: string) => `Depth includes ${amount} in front so the drawers can open.`,
+      /** Shown after the results, never as a pass or fail. {comfort} = comfortCm below. */
+      clearanceNote: (amount: string, comfort: string) =>
+        `Leave about ${amount} in front to open the drawers (about ${comfort} to stand and use them comfortably).`,
+      /** Room to stand at open drawers: general advice, not a product fact. 30 in. */
+      comfortCm: 30 * 2.54,
       noScript: 'Turn on JavaScript to use the fit checker, or compare your space with the sizes above.',
     },
     care: {
@@ -261,16 +265,20 @@ export const site = {
       title: 'How to measure',
       cabinet: {
         title: 'Measuring for the cabinet',
-        text: 'Measure the width, depth and height of the space. Then add room in front so the drawers can open.',
+        /** {amount} = frontClearanceCm from products.ts. */
+        text: (amount: string) =>
+          `Measure the width, depth and height of the space. Sliding doors need no extra room; the drawers need about ${amount} in front.`,
         frontTitle: 'Cabinet space, front view',
         frontDesc: 'The space between two walls, with arrows for width (W) across and height (H) from floor to top.',
         sideTitle: 'Cabinet space, side view',
         sideDesc:
-          'The cabinet against the back wall, with a dashed area in front marked front clearance: the room needed to pull out the drawers. The depth arrow (D) runs from the wall to the outer edge of that dashed area.',
+          'The cabinet against the back wall. The depth arrow (D) runs from the wall to the cabinet front. A dashed drawer is pulled out from the front, with an arrow above it for the drawer pull-out.',
         front: 'Front view',
         side: 'Side view',
         wall: 'Wall',
-        clearance: 'Front clearance',
+        /** Two lines above the drawn drawer: "Drawer pull-out" / "≈ 12″". */
+        pullOut: 'Drawer pull-out',
+        pullOutAmount: (amount: string) => `≈ ${amount}`,
       },
       corner: {
         title: 'Measuring for the corner shelf',

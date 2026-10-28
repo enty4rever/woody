@@ -1,10 +1,14 @@
 // Run with "npm test". Node strips the TypeScript types from fit.ts itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseLength, lengthToCm, checkFit, describeFit, formatInputLength } from '../src/lib/fit.ts';
+import { parseLength, lengthToCm, checkFit, fitAdvisories, describeFit, formatInputLength } from '../src/lib/fit.ts';
+import { getProduct } from '../src/data/products.ts';
 
 const NBSP = ' ';
-const cabinet = { dimensionsCm: { width: 80, depth: 40, height: 180 }, frontClearanceCm: 40 };
+// Real cabinet: 32 × 14 × 54 in, 12 in front clearance for the drawers
+const cabinet = getProduct('wood-cabinet');
+// Made-up sizes for the rounding tests (80 cm = 31.496 in)
+const sample = { dimensionsCm: { width: 80, depth: 40, height: 180 } };
 
 /** Space typed in inches → results by dimension. */
 const check = (product, w, d, h) => {
@@ -18,23 +22,33 @@ test('34 × 32 × 72 in: cabinet fits all 3', () => {
   assert.ok(r.width.fits && r.depth.fits && r.height.fits);
 });
 
-test('30 in wide: width too small by 1 ½″ (31.5 − 30)', () => {
-  const r = check(cabinet, 30, 32, 72);
+test('30 × 15 × 72 in: width too small by 2″, depth fits with 1″ spare', () => {
+  const r = check(cabinet, 30, 15, 72);
   assert.equal(r.width.fits, false);
-  assert.deepEqual(describeFit(r.width, 'in'), { kind: 'short', amount: `1${NBSP}½″` });
-  assert.ok(r.depth.fits && r.height.fits);
+  assert.deepEqual(describeFit(r.width, 'in'), { kind: 'short', amount: '2″' });
+  assert.equal(r.depth.fits, true);
+  assert.deepEqual(describeFit(r.depth, 'in'), { kind: 'spare', amount: '1″' });
+  assert.ok(r.height.fits);
 });
 
-test('30 in deep: depth + front clearance (80 cm = 31.5 in) too small by 1 ½″', () => {
+test('34 × 30 × 72 in: depth fits (30 ≥ 14), front clearance not added', () => {
   const r = check(cabinet, 34, 30, 72);
-  assert.equal(r.depth.neededCm, 80);
-  assert.equal(r.depth.fits, false);
-  assert.deepEqual(describeFit(r.depth, 'in'), { kind: 'short', amount: `1${NBSP}½″` });
+  assert.equal(r.depth.neededCm, 14 * 2.54);
+  assert.equal(r.depth.fits, true);
+});
+
+test('front clearance never makes fits false; it is an advisory', () => {
+  const huge = { ...sample, frontClearanceCm: 500 };
+  const results = checkFit(huge, { width: 80, depth: 40, height: 180 });
+  assert.ok(results.every((r) => r.fits));
+  assert.deepEqual(fitAdvisories(huge), [{ kind: 'frontClearance', cm: 500 }]);
+  assert.deepEqual(fitAdvisories(cabinet), [{ kind: 'frontClearance', cm: 12 * 2.54 }]);
+  assert.deepEqual(fitAdvisories(sample), []);
 });
 
 test('room to spare rounds down to ¼ in', () => {
   // 34 in − 31.496 in = 2.504 in → 2 ½″
-  const r = check(cabinet, 34, 32, 72);
+  const r = check(sample, 34, 32, 72);
   assert.deepEqual(describeFit(r.width, 'in'), { kind: 'spare', amount: `2${NBSP}½″` });
 });
 
@@ -48,7 +62,7 @@ test('spare below one step says "less than"; exactly 0 says exact', () => {
 });
 
 test('cm results: short rounds up, spare rounds down to whole cm', () => {
-  const [w, , h] = checkFit(cabinet, { width: 76.2, depth: 100, height: 182.9 });
+  const [w, , h] = checkFit(sample, { width: 76.2, depth: 100, height: 182.9 });
   assert.deepEqual(describeFit(w, 'cm'), { kind: 'short', amount: `4${NBSP}cm` });
   assert.deepEqual(describeFit(h, 'cm'), { kind: 'spare', amount: `2${NBSP}cm` });
 });

@@ -5,6 +5,7 @@ import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import { products, isCorner } from '../data/products';
 import { site } from '../data/site';
+import { formatInchMark } from '../lib/units';
 
 const copy = site.fitCare;
 const measure = copy.measure;
@@ -13,8 +14,17 @@ const cor = measure.corner;
 const abbr = measure.abbr;
 const along = site.product.fit.cornerLabels;
 
+// Side view to scale: the drawer pull-out is frontClearanceCm / depth of the drawn cabinet depth
+const cabinet = products.find((p) => !isCorner(p) && p.frontClearanceCm);
+const clearanceCm = cabinet?.frontClearanceCm ?? 0;
+const clearance = formatInchMark(clearanceCm, 'up');
+const CAB_BACK = 62;
+const CAB_DEPTH_PX = 88;
+const CAB_FRONT = CAB_BACK + CAB_DEPTH_PX;
+const pullOutPx = cabinet ? Math.round((clearanceCm / cabinet.dimensionsCm.depth) * CAB_DEPTH_PX) : 0;
+
 const guides = [
-  { key: 'cabinet', title: cab.title, text: cab.text, products: products.filter((p) => !isCorner(p)) },
+  { key: 'cabinet', title: cab.title, text: cab.text(clearance), products: products.filter((p) => !isCorner(p)) },
   { key: 'corner', title: cor.title, text: cor.text, products: products.filter((p) => isCorner(p)) },
 ] as const;
 ---
@@ -66,16 +76,23 @@ const guides = [
                   <title id="cab-side-title">{cab.sideTitle}</title>
                   <desc id="cab-side-desc">{cab.sideDesc}</desc>
 
-                  <!-- Depth of the space: from the back wall to the outer edge of the room in front for the drawers -->
+                  <!-- Depth: back wall to the cabinet front only. Sliding doors need no room, so only a drawer is drawn -->
                   <text class="caption" x="52" y="165" text-anchor="end">{cab.wall}</text>
                   <line class="wall" x1="60" y1="50" x2="60" y2="270" />
                   <line class="wall" x1="60" y1="270" x2="296" y2="270" />
-                  <rect class="edge" x="62" y="70" width="88" height="198" />
-                  <rect class="zone" x="150" y="180" width="120" height="88" />
-                  <line class="dim" x1="64" y1="30" x2="266" y2="30" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
-                  <text class="dim-label" x="165" y="22" text-anchor="middle">{abbr.depth}</text>
-                  <line class="dim" x1="154" y1="160" x2="266" y2="160" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
-                  <text class="dim-label small" x="210" y="150" text-anchor="middle">{cab.clearance}</text>
+                  <rect class="edge" x={CAB_BACK} y="70" width={CAB_DEPTH_PX} height="198" />
+                  <line class="dim" x1={CAB_BACK + 2} y1="30" x2={CAB_FRONT - 2} y2="30" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
+                  <text class="dim-label" x={(CAB_BACK + CAB_FRONT) / 2} y="22" text-anchor="middle">{abbr.depth}</text>
+                  {pullOutPx > 0 && (
+                    <>
+                      <rect class="edge dashed" x={CAB_FRONT} y="206" width={pullOutPx} height="24" />
+                      <line class="dim" x1={CAB_FRONT + 2} y1="192" x2={CAB_FRONT + pullOutPx - 2} y2="192" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
+                      <text class="dim-label small" x={CAB_FRONT + 2} y="156">
+                        <tspan>{cab.pullOut}</tspan>
+                        <tspan x={CAB_FRONT + 2} dy="17">{cab.pullOutAmount(clearance)}</tspan>
+                      </text>
+                    </>
+                  )}
                   <text class="caption" x="180" y="318" text-anchor="middle">{cab.side}</text>
                 </svg>
               </div>
@@ -230,13 +247,6 @@ const guides = [
     stroke-dasharray: 6 5;
   }
 
-  /* Front clearance: dashed green outline, no fill */
-  .zone {
-    fill: none;
-    stroke: var(--color-green);
-    stroke-width: 2;
-    stroke-dasharray: 6 5;
-  }
 
   .dim {
     stroke: var(--color-green);

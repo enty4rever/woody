@@ -13,7 +13,7 @@ export interface ParsedLength {
 
 export interface FitResult {
   dim: Dimension;
-  /** Product size in cm, plus front clearance for depth. */
+  /** Product size in cm (the cabinet's sliding doors need no extra room). */
   neededCm: number;
   spaceCm: number;
   fits: boolean;
@@ -84,17 +84,28 @@ export const parseLength = (input: string): ParsedLength | null => {
 export const lengthToCm = (length: ParsedLength, pageUnit: Unit): number =>
   (length.unit ?? pageUnit) === 'in' ? length.value * CM_PER_INCH : length.value;
 
-/** Width ≤ space width, height ≤ space height, depth + front clearance ≤ space depth. */
+/** Advice shown with the results. Never a pass or fail. */
+export interface FitAdvisory {
+  kind: 'frontClearance';
+  /** Room to leave in front so the drawers can open. */
+  cm: number;
+}
+
+/** Each product dimension ≤ the space. Front clearance is not part of it (see fitAdvisories). */
 export const checkFit = (
-  product: { dimensionsCm: Record<Dimension, number>; frontClearanceCm?: number },
+  product: { dimensionsCm: Record<Dimension, number> },
   spaceCm: Record<Dimension, number>,
 ): FitResult[] =>
   (['width', 'depth', 'height'] as const).map((dim) => {
-    const neededCm = product.dimensionsCm[dim] + (dim === 'depth' ? (product.frontClearanceCm ?? 0) : 0);
+    const neededCm = product.dimensionsCm[dim];
     const diff = spaceCm[dim] - neededCm;
     const fits = diff >= -EPSILON;
     return { dim, neededCm, spaceCm: spaceCm[dim], fits, diffCm: Math.abs(diff) < EPSILON ? 0 : Math.abs(diff) };
   });
+
+/** Drawers need room in front: a note next to the results, whatever the space. */
+export const fitAdvisories = (product: { frontClearanceCm?: number }): FitAdvisory[] =>
+  product.frontClearanceCm ? [{ kind: 'frontClearance', cm: product.frontClearanceCm }] : [];
 
 export type FitVerdict =
   | { kind: 'short'; amount: string }
