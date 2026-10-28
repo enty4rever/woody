@@ -1,4 +1,6 @@
 ---
+import { site } from '../data/site';
+
 const links = [
   { href: '/collection', label: 'Bộ sưu tập' },
   { href: '/our-story', label: 'Câu chuyện' },
@@ -13,7 +15,15 @@ const current = Astro.url.pathname.replace(/\/$/, '');
   <div class="container inner">
     <!-- TODO: replace text logo with SVG when available -->
     <a href="/" class="logo">Woody</a>
-    <nav aria-label="Điều hướng chính">
+    <button
+      type="button"
+      class="btn btn-outline menu-toggle"
+      aria-expanded="false"
+      aria-controls="site-nav"
+    >
+      {site.header.menuLabel}
+    </button>
+    <nav id="site-nav" aria-label="Điều hướng chính">
       <ul>
         {links.map((link) => (
           <li>
@@ -27,16 +37,49 @@ const current = Astro.url.pathname.replace(/\/$/, '');
   </div>
 </header>
 
+<script>
+  // Mobile menu (< 720px). Without JS the links simply stay visible as a vertical list.
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const toggle = header?.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = header?.querySelector<HTMLElement>('#site-nav');
+
+  if (header && toggle && nav) {
+    header.classList.add('js');
+
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      header.classList.toggle('is-open', open);
+    };
+
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
+
+    nav.addEventListener('click', (event) => {
+      if ((event.target as Element).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && isOpen()) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>
+
 <style>
   .site-header {
     border-bottom: 1px solid var(--color-border);
   }
 
+  /* Mobile: logo + Menu button on one row, links stack below when open */
   .inner {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    padding-block: var(--space-4) var(--space-1);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-4);
   }
 
   .logo {
@@ -45,33 +88,46 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     font-weight: 600;
     color: var(--color-text);
     text-decoration: none;
-    align-self: flex-start;
   }
 
-  /* Mobile: nav scrolls sideways under the logo, no JS */
+  .menu-toggle {
+    display: none;
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .js .menu-toggle {
+    display: inline-block;
+  }
+
   nav {
-    overflow-x: auto;
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    padding-block: var(--space-1);
-    scrollbar-width: none;
+    flex-basis: 100%;
+  }
+
+  .js:not(.is-open) nav {
+    display: none;
   }
 
   ul {
-    display: flex;
-    gap: var(--space-5);
+    display: grid;
     list-style: none;
     padding: 0;
-    white-space: nowrap;
   }
 
   nav a {
-    display: inline-block;
-    padding-block: var(--space-2);
+    display: block;
+    padding-block: var(--space-3);
     color: var(--color-text);
-    font-size: var(--text-sm);
     font-weight: 500;
     text-decoration: none;
+  }
+
+  nav li + li {
+    border-top: 1px solid var(--color-border);
   }
 
   nav a:hover,
@@ -80,26 +136,36 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     text-decoration: underline;
   }
 
-  @media (min-width: 768px) {
+  /* 720px+: horizontal nav, no Menu button */
+  @media (min-width: 720px) {
     .inner {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+      flex-wrap: nowrap;
       padding-block: var(--space-5);
     }
 
-    nav {
-      overflow: visible;
-      margin-inline: 0;
-      padding: 0;
+    .js .menu-toggle {
+      display: none;
+    }
+
+    nav,
+    .js:not(.is-open) nav {
+      display: block;
+      flex-basis: auto;
     }
 
     ul {
+      display: flex;
       gap: var(--space-6);
+      white-space: nowrap;
+    }
+
+    nav li + li {
+      border-top: 0;
     }
 
     nav a {
-      font-size: var(--text-base);
+      display: inline-block;
+      padding-block: var(--space-2);
     }
   }
 </style>

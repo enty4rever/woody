@@ -10,10 +10,13 @@ export interface SiteLink {
 export const site = {
   /** True while the copy below holds sample text. The production build refuses to run. */
   isPlaceholder: true,
+  header: {
+    menuLabel: 'Menu',
+  },
   home: {
     meta: {
-      title: 'Woody | Tủ và kệ gỗ khảm xà cừ',
-      description: 'Woody: tủ và kệ gỗ khảm xà cừ. Bộ sưu tập xem trước.',
+      title: '[MẪU] Woody | Tủ và kệ gỗ',
+      description: '[MẪU] Mô tả trang',
     },
     hero: {
       eyebrow: '[MẪU] Bộ sưu tập xem trước',

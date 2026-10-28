@@ -3,13 +3,14 @@ import '../styles/global.css';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
 
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = 'Woody: tủ và kệ gỗ khảm xà cừ. Bộ sưu tập xem trước.' } = Astro.props;
+const { title, description = site.home.meta.description } = Astro.props;
 ---
 
 <!doctype html>
