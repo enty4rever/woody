@@ -18,21 +18,31 @@ const labels = site.product.doorView;
 ---
 
 {closed && open && (
-  <figure class="door-view" data-door-view data-product={product.slug} data-fronts={JSON.stringify(fronts)}>
-    <div class="stage">
-      <img class="is-active" data-view="closed" src={closed.src} alt={closed.alt} width="800" height="1000" loading="lazy" />
-      <img data-view="open" src={open.src} alt={open.alt} width="800" height="1000" loading="lazy" />
-      <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
-      <RenderingTag />
-    </div>
-    <div class="controls">
+  <section
+    class="door-view"
+    aria-labelledby="door-view-title"
+    data-door-view
+    data-product={product.slug}
+    data-fronts={JSON.stringify(fronts)}
+  >
+    <header class="head">
+      <p class="eyebrow">{labels.eyebrow}</p>
+      <h2 id="door-view-title">{labels.title}</h2>
+    </header>
+    <figure class="media">
       <div class="toggle" role="group" aria-label={labels.label}>
         <button type="button" data-show="closed" aria-pressed="true">{labels.closed}</button>
         <button type="button" data-show="open" aria-pressed="false">{labels.open}</button>
       </div>
+      <div class="stage">
+        <img class="is-active" data-view="closed" src={closed.src} alt={closed.alt} width="800" height="1000" loading="lazy" />
+        <img data-view="open" src={open.src} alt={open.alt} width="800" height="1000" loading="lazy" />
+        <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
+        <RenderingTag />
+      </div>
       <figcaption>{labels.caption}</figcaption>
-    </div>
-  </figure>
+    </figure>
+  </section>
 )}
 
 <script>
@@ -62,10 +72,24 @@ const labels = site.product.doorView;
 </script>
 
 <style>
+  /* Mobile: heading, then buttons directly above the image, caption below.
+     From 900px: buttons + image + caption in the left 55% column (same as the gallery),
+     heading in the right column. */
   .door-view {
     display: grid;
     gap: var(--space-5);
-    align-items: center;
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .media {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+    min-width: 0;
   }
 
   .stage {
@@ -73,6 +97,7 @@ const labels = site.product.doorView;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1px;
+    width: 100%;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-border);
@@ -92,12 +117,6 @@ const labels = site.product.doorView;
 
   :global(html.js) .stage img:not(.is-active) {
     display: none;
-  }
-
-  .controls {
-    display: grid;
-    gap: var(--space-3);
-    justify-items: start;
   }
 
   :global(html:not(.js)) .toggle {
@@ -145,10 +164,17 @@ const labels = site.product.doorView;
     .door-view {
       grid-template-columns: 55fr 45fr;
       gap: var(--space-8);
+      align-items: start;
     }
 
-    :global(html.js) .stage {
-      max-width: 28rem;
+    .media {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .head {
+      grid-column: 2;
+      grid-row: 1;
     }
   }
 </style>

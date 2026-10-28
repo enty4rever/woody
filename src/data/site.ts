@@ -107,6 +107,8 @@ export const site = {
       antiTip: 'Includes an anti-tip wall anchor',
     },
     doorView: {
+      eyebrow: '[SAMPLE] Door view',
+      title: '[SAMPLE] Section title for the closed and open views',
       label: 'Door view',
       closed: 'Closed',
       open: 'Open',
