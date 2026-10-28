@@ -1,0 +1,39 @@
+---
+// Home / ... / current page. Used on every page except Home and 404.
+// Pass the links in between as `items`; Home is always first.
+import { site, type SiteLink } from '../data/site';
+
+interface Props {
+  items?: SiteLink[];
+  current: string;
+}
+
+const { items = [], current } = Astro.props;
+const copy = site.breadcrumb;
+const links = [copy.home, ...items];
+---
+
+<nav class="breadcrumb" aria-label={copy.label}>
+  <ol>
+    {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+    <li><span aria-current="page">{current}</span></li>
+  </ol>
+</nav>
+
+<style>
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    padding: 0;
+    padding-block: var(--space-4);
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .breadcrumb li + li::before {
+    content: '/' / '';
+    margin-right: var(--space-2);
+  }
+</style>

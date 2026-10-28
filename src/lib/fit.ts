@@ -1,6 +1,6 @@
 // Fit checker logic, kept free of the DOM so tests can run it with node:test.
 // The visitor types the width, depth and height of their space; we compare in cm.
-import { CM_PER_INCH, formatCm, formatInchMark } from './units.ts';
+import { CM_PER_INCH, cmToInDown, formatCm, formatInchMark, quarterNumber } from './units.ts';
 
 export type Unit = 'in' | 'cm';
 export type Dimension = 'width' | 'depth' | 'height';
@@ -119,3 +119,11 @@ export const describeFit = (result: FitResult, unit: Unit): FitVerdict => {
   const amount = unit === 'in' ? formatInchMark(result.diffCm, 'down') : formatCm(Math.floor(result.diffCm + EPSILON));
   return { kind: 'spare', amount };
 };
+
+/**
+ * Rewrites a space measurement in the other unit when the visitor switches in / cm.
+ * It is the visitor's space, so it rounds DOWN (never overstated): cm to 0.1, inches to ¼.
+ * 59.944 cm → "59.9", 60 cm → "23 ½" (23.62 in).
+ */
+export const formatInputLength = (cm: number, unit: Unit): string =>
+  unit === 'in' ? quarterNumber(cmToInDown(cm)) : String(Math.floor(cm * 10 + EPSILON) / 10);

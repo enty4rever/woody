@@ -1,7 +1,7 @@
 // Run with "npm test". Node strips the TypeScript types from fit.ts itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseLength, lengthToCm, checkFit, describeFit } from '../src/lib/fit.ts';
+import { parseLength, lengthToCm, checkFit, describeFit, formatInputLength } from '../src/lib/fit.ts';
 
 const NBSP = ' ';
 const cabinet = { dimensionsCm: { width: 80, depth: 40, height: 180 }, frontClearanceCm: 40 };
@@ -76,4 +76,22 @@ test('parse rejects empty, invalid and non-positive input', () => {
   for (const text of ['', '   ', 'abc', '-3', '0', '23 3/2', '1/0', '23..5', 'cm', '12 ft']) {
     assert.equal(parseLength(text), null, JSON.stringify(text));
   }
+});
+
+// Unit switch in the fit checker: the space is rewritten rounded DOWN, never overstated.
+test('switch to cm: floor to 0.1 cm', () => {
+  assert.equal(formatInputLength(59.69, 'cm'), '59.6'); // 23.5 in
+  assert.equal(formatInputLength(23.6 * 2.54, 'cm'), '59.9'); // 59.944
+  assert.equal(formatInputLength(60, 'cm'), '60');
+});
+
+test('switch to inches: floor to ¼ in', () => {
+  assert.equal(formatInputLength(59.69, 'in'), `23${NBSP}½`); // exactly 23.5 in
+  assert.equal(formatInputLength(60, 'in'), `23${NBSP}½`); // 23.622 in
+  assert.equal(formatInputLength(63.5, 'in'), '25');
+});
+
+test('rewritten values parse back', () => {
+  assert.deepEqual(parseLength(formatInputLength(60, 'in')), { value: 23.5, unit: undefined });
+  assert.deepEqual(parseLength(formatInputLength(23.6 * 2.54, 'cm')), { value: 59.9, unit: undefined });
 });

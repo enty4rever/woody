@@ -21,6 +21,8 @@
   --color-border: #ddd0be;
   --color-green: #1e4d3b;
   --color-green-hover: #163a2c;
+  /* Product image frames only (renders are square on white). Not a page background. */
+  --color-image-bg: #ffffff;
 
   /* Dev-only warning for sample data (PlaceholderBadge). Not a brand color. */
   --color-placeholder: #f2c94c;

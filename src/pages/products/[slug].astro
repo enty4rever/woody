@@ -2,6 +2,7 @@
 // Product page (Phase 4a top half, Phase 4b specs to cross-sell). Every fact comes from products.ts,
 // every label from site.ts.
 import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import Gallery from '../../components/Gallery.astro';
 import ColorSwatch from '../../components/ColorSwatch.astro';
 import StickyInfo from '../../components/StickyInfo.astro';
@@ -15,7 +16,7 @@ import CrossSell from '../../components/CrossSell.astro';
 import { products, type Product } from '../../data/products';
 import { site } from '../../data/site';
 import { formatUsd } from '../../lib/format';
-import { formatDimensions, formatPounds } from '../../lib/units';
+import { formatDimensions, formatDimensionsCm, formatPounds, formatKg } from '../../lib/units';
 
 export function getStaticPaths() {
   return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
@@ -29,25 +30,21 @@ const { product } = Astro.props;
 const copy = site.product;
 const facts = copy.keyFacts;
 
-const keyFacts = [
-  formatDimensions(product.dimensionsCm),
+// Sizes and weight come as an in / cm pair; html[data-unit] shows one (same as SpecTable).
+type Fact = string | { in: string; cm: string };
+const keyFacts: Fact[] = [
+  { in: formatDimensions(product.dimensionsCm), cm: formatDimensionsCm(product.dimensionsCm) },
   `${facts.wood}: ${product.woodType}`,
   facts.setup[product.setup],
   product.colors.length === 1 ? `${facts.color}: ${product.colors[0].name}` : facts.colors(product.colors.length),
-  `${facts.weight}: ${formatPounds(product.weightKg)}`,
+  { in: `${facts.weight}: ${formatPounds(product.weightKg)}`, cm: `${facts.weight}: ${formatKg(product.weightKg)}` },
   ...(product.antiTipKit ? [facts.antiTip] : []),
 ];
 ---
 
 <Base title={product.name} description={copy.meta.description}>
   <div class="container">
-    <nav class="breadcrumb" aria-label={copy.breadcrumb.label}>
-      <ol>
-        <li><a href={copy.breadcrumb.home.href}>{copy.breadcrumb.home.label}</a></li>
-        <li><a href={copy.breadcrumb.collection.href}>{copy.breadcrumb.collection.label}</a></li>
-        <li><span aria-current="page">{product.name}</span></li>
-      </ol>
-    </nav>
+    <Breadcrumb items={[site.breadcrumb.collection]} current={product.name} />
 
     <div class="product-top">
       <Gallery product={product} />
@@ -63,7 +60,16 @@ const keyFacts = [
           </p>
           {product.colors.length > 1 && <ColorSwatch product={product} />}
           <ul class="facts" aria-label={facts.label}>
-            {keyFacts.map((fact) => <li>{fact}</li>)}
+            {keyFacts.map((fact) => (
+              <li>
+                {typeof fact === 'string' ? fact : (
+                  <>
+                    <span data-u="in">{fact.in}</span>
+                    <span data-u="cm">{fact.cm}</span>
+                  </>
+                )}
+              </li>
+            ))}
           </ul>
           <a href={copy.cta.href} class="btn btn-primary cta">{copy.cta.label}</a>
         </div>
@@ -103,22 +109,6 @@ const keyFacts = [
 </Base>
 
 <style>
-  .breadcrumb ol {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
-    padding: 0;
-    padding-block: var(--space-4);
-    list-style: none;
-    font-size: var(--text-sm);
-    color: var(--color-muted);
-  }
-
-  .breadcrumb li + li::before {
-    content: '/' / '';
-    margin-right: var(--space-2);
-  }
-
   /* Mobile: gallery on top, info below. From 900px: gallery ~55% left, info right. */
   .product-top {
     display: grid;

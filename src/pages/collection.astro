@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+const copy = site.collection;
+---
+
+<Base title={copy.meta.title} description={copy.meta.description}>
+  <div class="container">
+    <Breadcrumb current={site.breadcrumb.collection.label} />
+
+    <header class="head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1>{copy.title}</h1>
+      <p class="intro">{copy.intro}</p>
+    </header>
+
+    <div class="grid">
+      {products.map((product) => <ProductCard product={product} headingLevel={2} />)}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-4) var(--space-6);
+  }
+
+  .intro {
+    max-width: 36rem;
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const copy = site.notFound;
+---
+
+<Base title={copy.meta.title} description={copy.meta.description}>
+  <section class="container not-found">
+    <h1>{copy.title}</h1>
+    <p class="text">{copy.text}</p>
+    <div class="actions">
+      <a href={copy.home.href} class="btn btn-primary">{copy.home.label}</a>
+      <a href={copy.collection.href} class="btn btn-outline">{copy.collection.label}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    padding-block: var(--space-8);
+  }
+
+  .text {
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+</style>

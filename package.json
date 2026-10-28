@@ -12,9 +12,12 @@
     "check:data": "node scripts/check-data.mjs",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "node --test \"tests/*.test.mjs\""
+    "test": "node --test \"tests/*.test.mjs\" && npm run build:preview && npm run check:links",
+    "check:links": "node scripts/check-links.mjs"
   },
   "dependencies": {
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@fontsource/lora": "^5.3.0",
     "astro": "^7.4.2"
   }
 }

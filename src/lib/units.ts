@@ -24,7 +24,7 @@ export const cmToInDown = (cm: number): number => Math.floor((cm / CM_PER_INCH) 
 export const kgToLb = (kg: number): number => Math.ceil(kg * LB_PER_KG - EPSILON);
 
 /** 31.5 → "31 ½" (NBSP before the fraction), 71 → "71". Expects a multiple of ¼. */
-const quarterNumber = (inches: number): string => {
+export const quarterNumber = (inches: number): string => {
   const quarters = Math.round(inches * 4);
   const whole = Math.floor(quarters / 4);
   const fraction = FRACTIONS[quarters % 4];
@@ -58,3 +58,7 @@ export const formatDimensions = (d: { width: number; depth: number; height: numb
     `${inchNumber(d.depth)}${INCH}D`,
     `${inchNumber(d.height)}${INCH}H`,
   ].join(' × ');
+
+/** Stored values, metric listing style: "80 cm W × 40 cm D × 180 cm H". */
+export const formatDimensionsCm = (d: { width: number; depth: number; height: number }): string =>
+  [`${formatCm(d.width)}${NBSP}W`, `${formatCm(d.depth)}${NBSP}D`, `${formatCm(d.height)}${NBSP}H`].join(' × ');

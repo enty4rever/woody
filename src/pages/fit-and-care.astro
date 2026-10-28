@@ -1,0 +1,299 @@
+---
+// How to measure (two simple drawings) + general care. Drawing text comes from site.ts;
+// lines use the color tokens: objects in text color, measurements in green (identity).
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+const copy = site.fitCare;
+const measure = copy.measure;
+const cab = measure.cabinet;
+const cor = measure.corner;
+const abbr = measure.abbr;
+const along = site.product.fit.cornerLabels;
+
+const isCorner = (shape?: string) => shape === 'quarter-round corner';
+const guides = [
+  { key: 'cabinet', title: cab.title, text: cab.text, products: products.filter((p) => !isCorner(p.shape)) },
+  { key: 'corner', title: cor.title, text: cor.text, products: products.filter((p) => isCorner(p.shape)) },
+] as const;
+---
+
+<Base title={copy.meta.title} description={copy.meta.description}>
+  <div class="container">
+    <Breadcrumb current={copy.meta.title} />
+
+    <header class="page-head">
+      <h1>{copy.title}</h1>
+      <p class="intro">{copy.intro}</p>
+    </header>
+
+    <section class="block" aria-labelledby="measure-title">
+      <header class="head">
+        <p class="eyebrow">{measure.eyebrow}</p>
+        <h2 id="measure-title">{measure.title}</h2>
+      </header>
+
+      <div class="guides">
+        {guides.map((guide) => (
+          <article class="guide">
+            <h3>{guide.title}</h3>
+            <p class="muted">{guide.text}</p>
+
+            {guide.key === 'cabinet' ? (
+              <div class="views">
+                <svg class="diagram" viewBox="0 0 300 330" role="img" aria-labelledby="cab-front-title cab-front-desc">
+                  <title id="cab-front-title">{cab.frontTitle}</title>
+                  <desc id="cab-front-desc">{cab.frontDesc}</desc>
+                  <defs>
+                    <marker id="cab-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                      <path class="arrowhead" d="M0 0 L10 5 L0 10 z" />
+                    </marker>
+                  </defs>
+
+                  <!-- The space between two walls -->
+                  <line class="wall" x1="50" y1="50" x2="50" y2="270" />
+                  <line class="wall" x1="250" y1="50" x2="250" y2="270" />
+                  <line class="wall" x1="30" y1="270" x2="270" y2="270" />
+                  <line class="edge" x1="50" y1="50" x2="250" y2="50" />
+                  <line class="dim" x1="54" y1="30" x2="246" y2="30" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
+                  <text class="dim-label" x="150" y="22" text-anchor="middle">{abbr.width}</text>
+                  <line class="dim" x1="275" y1="54" x2="275" y2="266" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
+                  <text class="dim-label" x="286" y="166">{abbr.height}</text>
+                  <text class="caption" x="150" y="318" text-anchor="middle">{cab.front}</text>
+                </svg>
+                <svg class="diagram" viewBox="0 0 300 330" role="img" aria-labelledby="cab-side-title cab-side-desc">
+                  <title id="cab-side-title">{cab.sideTitle}</title>
+                  <desc id="cab-side-desc">{cab.sideDesc}</desc>
+
+                  <!-- Depth from the back wall, then room in front for the drawers -->
+                  <text class="caption" x="52" y="165" text-anchor="end">{cab.wall}</text>
+                  <line class="wall" x1="60" y1="50" x2="60" y2="270" />
+                  <line class="wall" x1="60" y1="270" x2="296" y2="270" />
+                  <rect class="edge" x="62" y="70" width="88" height="198" />
+                  <rect class="zone" x="150" y="180" width="120" height="88" />
+                  <line class="dim" x1="64" y1="30" x2="146" y2="30" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
+                  <text class="dim-label" x="105" y="22" text-anchor="middle">{abbr.depth}</text>
+                  <line class="dim" x1="154" y1="160" x2="266" y2="160" marker-start="url(#cab-arrow)" marker-end="url(#cab-arrow)" />
+                  <text class="dim-label small" x="210" y="150" text-anchor="middle">{cab.clearance}</text>
+                  <text class="caption" x="180" y="318" text-anchor="middle">{cab.side}</text>
+                </svg>
+              </div>
+            ) : (
+              <svg class="diagram corner" viewBox="0 0 320 320" role="img" aria-labelledby="cor-svg-title cor-svg-desc">
+                <title id="cor-svg-title">{cor.svgTitle}</title>
+                <desc id="cor-svg-desc">{cor.svgDesc}</desc>
+                <defs>
+                  <marker id="cor-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path class="arrowhead" d="M0 0 L10 5 L0 10 z" />
+                  </marker>
+                </defs>
+
+                <!-- Two walls meeting at the corner (top left), seen from above -->
+                <line class="wall" x1="50" y1="50" x2="300" y2="50" />
+                <line class="wall" x1="50" y1="50" x2="50" y2="300" />
+                <text class="caption" x="300" y="38" text-anchor="end">{cor.wall1}</text>
+                <text class="caption" x="38" y="300" transform="rotate(-90 38 300)">{cor.wall2}</text>
+                <circle class="corner-dot" cx="50" cy="50" r="5" />
+                <text class="caption" x="60" y="38">{cor.corner}</text>
+
+                <!-- Shelf footprint -->
+                <path class="edge dashed" d="M52 52 L220 52 A168 168 0 0 1 52 220 Z" />
+
+                <line class="dim" x1="54" y1="68" x2="218" y2="68" marker-end="url(#cor-arrow)" />
+                <text class="dim-label small" x="150" y="90" text-anchor="middle">{along.width}</text>
+                <line class="dim" x1="68" y1="54" x2="68" y2="218" marker-end="url(#cor-arrow)" />
+                <text class="dim-label small" x="88" y="150" text-anchor="middle" transform="rotate(-90 88 150)">{along.depth}</text>
+                <text class="caption" x="250" y="290" text-anchor="middle">{cor.top}</text>
+              </svg>
+            )}
+
+            <ul class="links">
+              {guide.products.map((product) => (
+                <li>
+                  <a href={`/products/${product.slug}#fit`} aria-label={`${measure.checkFit}: ${product.name}`}>
+                    {measure.checkFit}
+                  </a>
+                  <span class="muted"> · {product.name}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="care-title">
+      <header class="head">
+        <p class="eyebrow">{copy.care.eyebrow}</p>
+        <h2 id="care-title">{copy.care.title}</h2>
+      </header>
+      <div class="care">
+        {copy.care.blocks.map((block) => (
+          <article class="care-block">
+            <h3>{block.title}</h3>
+            <ul>
+              {block.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-4) var(--space-2);
+  }
+
+  .intro {
+    max-width: 40rem;
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .muted {
+    color: var(--color-muted);
+  }
+
+  .block {
+    padding-block: var(--space-7);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .guides,
+  .care {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .guide,
+  .care-block {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .diagram {
+    width: 100%;
+    height: auto;
+    margin-block: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: 16px;
+  }
+
+  .diagram.corner {
+    max-width: 22rem;
+  }
+
+  /* Cabinet: front and side view stacked on small phones, side by side from 480px */
+  .views {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .views .diagram {
+    max-width: 20rem;
+  }
+
+  @media (min-width: 480px) {
+    .views {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .wall {
+    stroke: var(--color-text);
+    stroke-width: 4;
+    stroke-linecap: square;
+  }
+
+  .edge {
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 2;
+  }
+
+  .dashed {
+    stroke-dasharray: 6 5;
+  }
+
+  /* Front clearance: dashed green outline, no fill */
+  .zone {
+    fill: none;
+    stroke: var(--color-green);
+    stroke-width: 2;
+    stroke-dasharray: 6 5;
+  }
+
+  .dim {
+    stroke: var(--color-green);
+    stroke-width: 2;
+  }
+
+  .arrowhead,
+  .corner-dot {
+    fill: var(--color-green);
+  }
+
+  .dim-label {
+    fill: var(--color-green);
+    font-weight: 600;
+  }
+
+  .caption {
+    fill: var(--color-muted);
+    font-size: 14px;
+  }
+
+  .small {
+    font-size: 14px;
+  }
+
+  .links {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    font-weight: 500;
+  }
+
+  .care-block ul {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: var(--space-5);
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 768px) {
+    .block {
+      padding-block: var(--space-8);
+    }
+
+    .care {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .guides {
+      grid-template-columns: 3fr 2fr;
+    }
+  }
+</style>

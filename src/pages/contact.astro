@@ -1,0 +1,50 @@
+---
+// Email only: a mailto link with the subject filled in. No form, no outside service.
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { site } from '../data/site';
+
+const copy = site.contact;
+const mailto = `mailto:${copy.email}?subject=${encodeURIComponent(copy.subject)}`;
+---
+
+<Base title={copy.meta.title} description={copy.meta.description}>
+  <div class="container">
+    <Breadcrumb current={copy.meta.title} />
+
+    <section class="contact">
+      <h1>{copy.title}</h1>
+      <p class="intro">{copy.intro}</p>
+      <p class="email"><a href={mailto}>{copy.email}</a></p>
+      <p class="note">{copy.note}</p>
+      <!-- TODO: real contact email (site.contact.email) -->
+    </section>
+  </div>
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    max-width: 40rem;
+    padding-block: var(--space-4) var(--space-7);
+  }
+
+  .intro {
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  .email {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .note {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+</style>

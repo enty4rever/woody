@@ -29,7 +29,7 @@ const templates = {
 };
 ---
 
-<section class="fit" aria-labelledby="fit-title">
+<section class="fit" id="fit" aria-labelledby="fit-title">
   <header class="head">
     <p class="eyebrow">{copy.eyebrow}</p>
     <h2 id="fit-title">{copy.title}</h2>
@@ -77,7 +77,7 @@ const templates = {
 </section>
 
 <script>
-  import { parseLength, lengthToCm, checkFit, describeFit, type Dimension, type Unit } from '../lib/fit';
+  import { parseLength, lengthToCm, checkFit, describeFit, formatInputLength, type Dimension, type Unit } from '../lib/fit';
 
   type Copy = {
     fits: string;
@@ -90,8 +90,6 @@ const templates = {
 
   const DIMS: Dimension[] = ['width', 'depth', 'height'];
   const pageUnit = (): Unit => (document.documentElement.dataset.unit === 'cm' ? 'cm' : 'in');
-  /** Up to 2 decimals, no trailing zeros: 86.36, 34. */
-  const tidy = (n: number) => String(Math.round(n * 100) / 100);
 
   document.querySelectorAll<HTMLFormElement>('[data-fit]').forEach((form) => {
     const product = JSON.parse(form.dataset.product ?? '{}');
@@ -161,6 +159,8 @@ const templates = {
     });
 
     // Switching units converts what was typed (unless it carries its own unit) and re-checks.
+    // The rounded-down value is shown, but the exact cm is kept in data-cm so switching back
+    // and forth does not shrink the number each time. Typing a new value drops it.
     document.addEventListener('unit-change', (event) => {
       const unit = (event as CustomEvent<{ unit: Unit }>).detail.unit;
       for (const dim of DIMS) {
@@ -168,8 +168,11 @@ const templates = {
         const parsed = parseLength(field.value);
         if (!parsed || parsed.unit) continue;
         const from: Unit = unit === 'cm' ? 'in' : 'cm';
-        const cm = lengthToCm(parsed, from);
-        field.value = tidy(unit === 'cm' ? cm : cm / 2.54);
+        const kept = field.dataset.written === field.value ? Number(field.dataset.cm) : NaN;
+        const cm = Number.isFinite(kept) ? kept : lengthToCm(parsed, from);
+        field.value = formatInputLength(cm, unit);
+        field.dataset.cm = String(cm);
+        field.dataset.written = field.value;
       }
       if (list && !list.hidden) run(false);
     });

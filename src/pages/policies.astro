@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { site } from '../data/site';
+
+const copy = site.policies;
+---
+
+<Base title={copy.meta.title} description={copy.meta.description}>
+  <div class="container">
+    <Breadcrumb current={copy.meta.title} />
+
+    <article class="policies">
+      <header class="head">
+        <h1>{copy.title}</h1>
+        <p class="intro">{copy.intro}</p>
+      </header>
+
+      {copy.sections.map((section) => (
+        <section id={section.id} aria-labelledby={`${section.id}-title`}>
+          <h2 id={`${section.id}-title`}>{section.title}</h2>
+          {section.text.map((text) => <p>{text}</p>)}
+        </section>
+      ))}
+
+      <section id={copy.contact.id} aria-labelledby={`${copy.contact.id}-title`}>
+        <h2 id={`${copy.contact.id}-title`}>{copy.contact.title}</h2>
+        <p>
+          {copy.contact.text} <a href={copy.contact.link.href}>{copy.contact.link.label}</a>
+        </p>
+      </section>
+    </article>
+  </div>
+</Base>
+
+<style>
+  .policies {
+    display: grid;
+    gap: var(--space-6);
+    max-width: 44rem;
+    padding-block: var(--space-4) var(--space-7);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .intro {
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+  }
+
+  section {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+    scroll-margin-top: var(--space-5);
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+  }
+</style>

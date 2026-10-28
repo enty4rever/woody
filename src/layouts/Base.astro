@@ -1,4 +1,15 @@
 ---
+// Self-hosted fonts (no third-party requests): latin + latin-ext, only the weights in use.
+import '@fontsource/lora/latin-500.css';
+import '@fontsource/lora/latin-ext-500.css';
+import '@fontsource/lora/latin-600.css';
+import '@fontsource/lora/latin-ext-600.css';
+import '@fontsource/be-vietnam-pro/latin-400.css';
+import '@fontsource/be-vietnam-pro/latin-ext-400.css';
+import '@fontsource/be-vietnam-pro/latin-500.css';
+import '@fontsource/be-vietnam-pro/latin-ext-500.css';
+import '@fontsource/be-vietnam-pro/latin-600.css';
+import '@fontsource/be-vietnam-pro/latin-ext-600.css';
 import '../styles/global.css';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/Header.astro';
@@ -34,12 +45,6 @@ const { title, description = site.home.meta.description } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Lora:wght@500;600&display=swap"
-    />
     <title>{`${title} | ${site.brand}`}</title>
   </head>
   <body>

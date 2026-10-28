@@ -10,22 +10,25 @@ import RenderingTag from './RenderingTag.astro';
 
 interface Props {
   product: Product;
+  /** 2 when the card sits directly under the page h1 (Collection), else 3. */
+  headingLevel?: 2 | 3;
 }
 
-const { product } = Astro.props;
+const { product, headingLevel = 3 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const href = `/products/${product.slug}`;
 const image = product.colors[0]?.images[0];
 ---
 
 <article class="product-card">
   <a href={href} class="media" tabindex="-1" aria-hidden="true">
-    {image && <img src={image.src} alt={image.alt} width="800" height="1000" loading="lazy" />}
+    {image && <img src={image.src} alt={image.alt} width="800" height="800" loading="lazy" />}
     <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
     <RenderingTag />
   </a>
   <div class="body">
     <p class="eyebrow">{site.home.productTypeLabel[product.type]}</p>
-    <h3 class="name"><a href={href}>{product.name}</a></h3>
+    <Heading class="name"><a href={href}>{product.name}</a></Heading>
     <p class="line">{product.shortLine}</p>
     <p class="price">{formatUsd(product.priceUsd)}</p>
     <p class="size">{formatDimensions(product.dimensionsCm)}</p>
@@ -53,14 +56,14 @@ const image = product.colors[0]?.images[0];
   .media {
     position: relative;
     display: block;
-    aspect-ratio: 4 / 5;
-    background: var(--color-bg);
+    aspect-ratio: 1 / 1;
+    background: var(--color-image-bg);
   }
 
   .media img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .body {

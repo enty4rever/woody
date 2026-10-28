@@ -35,8 +35,8 @@ const labels = site.product.doorView;
         <button type="button" data-show="open" aria-pressed="false">{labels.open}</button>
       </div>
       <div class="stage">
-        <img class="is-active" data-view="closed" src={closed.src} alt={closed.alt} width="800" height="1000" loading="lazy" />
-        <img data-view="open" src={open.src} alt={open.alt} width="800" height="1000" loading="lazy" />
+        <img class="is-active" data-view="closed" src={closed.src} alt={closed.alt} width="800" height="800" loading="lazy" />
+        <img data-view="open" src={open.src} alt={open.alt} width="800" height="800" loading="lazy" />
         <PlaceholderBadge isPlaceholder={product.isPlaceholder} />
         <RenderingTag />
       </div>
@@ -107,7 +107,9 @@ const labels = site.product.doorView;
   .stage img {
     width: 100%;
     height: auto;
-    background: var(--color-surface);
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    background: var(--color-image-bg);
   }
 
   /* With JS: one image at a time */

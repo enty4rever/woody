@@ -1,7 +1,7 @@
 // Run with "npm test". Node strips the TypeScript types from units.ts itself.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatInches, formatPounds, formatDimensions } from '../src/lib/units.ts';
+import { formatInches, formatPounds, formatDimensions, formatDimensionsCm } from '../src/lib/units.ts';
 
 const NBSP = ' ';
 
@@ -30,5 +30,12 @@ test('dimensions use W/D/H listing style', () => {
   assert.equal(
     formatDimensions({ width: 80, depth: 30, height: 160 }),
     `31${NBSP}½″W × 12″D × 63″H`,
+  );
+});
+
+test('cm dimensions use stored values', () => {
+  assert.equal(
+    formatDimensionsCm({ width: 80, depth: 40, height: 180 }),
+    `80${NBSP}cm${NBSP}W × 40${NBSP}cm${NBSP}D × 180${NBSP}cm${NBSP}H`,
   );
 });
