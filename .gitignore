@@ -3,6 +3,9 @@ dist/
 # generated types
 .astro/
 
+# raw renders (25 MB), not used by the site yet
+hinhanh/
+
 # dependencies
 node_modules/
 

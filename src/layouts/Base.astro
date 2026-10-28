@@ -1,15 +1,11 @@
 ---
-// Self-hosted fonts (no third-party requests): latin + latin-ext, only the weights in use.
-import '@fontsource/lora/latin-500.css';
-import '@fontsource/lora/latin-ext-500.css';
-import '@fontsource/lora/latin-600.css';
-import '@fontsource/lora/latin-ext-600.css';
-import '@fontsource/be-vietnam-pro/latin-400.css';
-import '@fontsource/be-vietnam-pro/latin-ext-400.css';
-import '@fontsource/be-vietnam-pro/latin-500.css';
-import '@fontsource/be-vietnam-pro/latin-ext-500.css';
-import '@fontsource/be-vietnam-pro/latin-600.css';
-import '@fontsource/be-vietnam-pro/latin-ext-600.css';
+// Self-hosted fonts (no third-party requests), only the weights in use. The weight files carry
+// unicode-range per subset, so the browser downloads only the subsets a page actually uses.
+import '@fontsource/lora/500.css';
+import '@fontsource/lora/600.css';
+import '@fontsource/be-vietnam-pro/400.css';
+import '@fontsource/be-vietnam-pro/500.css';
+import '@fontsource/be-vietnam-pro/600.css';
 import '../styles/global.css';
 // Same files the CSS above references (Vite gives both the same hashed URL): preloaded because
 // the first screen needs them (headings Lora 500, body Be Vietnam Pro 400).

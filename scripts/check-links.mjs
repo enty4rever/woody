@@ -3,6 +3,8 @@
 // - href="/page#id" also needs id="id" on that page; href="#id" needs it on the same page
 // - /support#assembly, #anchor, #contact-support and #fit on every product page must exist
 // - no request may go to Google Fonts (the Privacy page says nothing loads from third parties)
+// - no .svg may have "--" inside an XML comment (invalid XML: browsers reject the whole file)
+// - each @font-face (family + weight + style + unicode-range) is declared once in the CSS
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -76,6 +78,26 @@ for (const file of files.filter((f) => /\.(css|js)$/.test(f))) {
   for (const word of banned) {
     if (source.includes(word)) problems.push(`${relative(dist, file)}: contains "${word}"`);
   }
+}
+
+// "--" inside <!-- --> is invalid XML, so the browser drops the whole SVG (e.g. the favicon).
+for (const file of files.filter((f) => f.endsWith('.svg'))) {
+  for (const [, body] of readFileSync(file, 'utf8').matchAll(/<!--([\s\S]*?)-->/g)) {
+    if (body.includes('--')) problems.push(`${relative(dist, file)}: XML comment contains "--"`);
+  }
+}
+
+// Each @font-face once: duplicates mean the same font imported twice (extra CSS, maybe extra downloads).
+const faces = new Map();
+for (const file of files.filter((f) => f.endsWith('.css'))) {
+  for (const [block] of readFileSync(file, 'utf8').matchAll(/@font-face\s*{[^}]*}/g)) {
+    const prop = (name) => block.match(new RegExp(`${name}:\\s*([^;}]+)`))?.[1].trim() ?? '';
+    const key = ['font-family', 'font-weight', 'font-style', 'unicode-range'].map(prop).join(' | ');
+    faces.set(key, (faces.get(key) ?? 0) + 1);
+  }
+}
+for (const [key, count] of faces) {
+  if (count > 1) problems.push(`@font-face declared ${count} times: ${key}`);
 }
 
 if (!isFile(join(dist, '404.html'))) problems.push('dist/404.html is missing');
