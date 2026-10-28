@@ -1,0 +1,105 @@
+---
+const links = [
+  { href: '/collection', label: 'Bộ sưu tập' },
+  { href: '/our-story', label: 'Câu chuyện' },
+  { href: '/fit-and-care', label: 'Đo & bảo quản' },
+  { href: '/contact', label: 'Liên hệ' },
+];
+
+const current = Astro.url.pathname.replace(/\/$/, '');
+---
+
+<header class="site-header">
+  <div class="container inner">
+    <!-- TODO: replace text logo with SVG when available -->
+    <a href="/" class="logo">Woody</a>
+    <nav aria-label="Điều hướng chính">
+      <ul>
+        {links.map((link) => (
+          <li>
+            <a href={link.href} aria-current={current === link.href ? 'page' : undefined}>
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-block: var(--space-4) var(--space-1);
+  }
+
+  .logo {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+    align-self: flex-start;
+  }
+
+  /* Mobile: nav scrolls sideways under the logo, no JS */
+  nav {
+    overflow-x: auto;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    padding-block: var(--space-1);
+    scrollbar-width: none;
+  }
+
+  ul {
+    display: flex;
+    gap: var(--space-5);
+    list-style: none;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  nav a {
+    display: inline-block;
+    padding-block: var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding-block: var(--space-5);
+    }
+
+    nav {
+      overflow: visible;
+      margin-inline: 0;
+      padding: 0;
+    }
+
+    ul {
+      gap: var(--space-6);
+    }
+
+    nav a {
+      font-size: var(--text-base);
+    }
+  }
+</style>

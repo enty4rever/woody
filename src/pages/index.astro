@@ -1,16 +1,100 @@
 ---
+import Base from '../layouts/Base.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="Woody | Tủ và kệ gỗ khảm xà cừ">
+  <h1 class="visually-hidden">Woody</h1>
+
+  <!-- TEMP color demo: remove in Phase 3 -->
+  <section class="container demo" aria-label="Bản xem thử màu (tạm thời)">
+    <p class="eyebrow">Xem thử màu</p>
+    <h2>Nâu cho hành động, xanh cho nhận diện</h2>
+    <div class="actions">
+      <a href="/collection" class="btn btn-primary">Nút chính</a>
+      <a href="/fit-and-care" class="btn btn-outline">Nút phụ</a>
+    </div>
+    <a href="/collection" class="card">
+      <p class="eyebrow">Thẻ mẫu</p>
+      <h3>Rê chuột để thấy viền xanh</h3>
+      <p class="card-text">Viền mặc định màu --color-border, chuyển sang --color-green khi hover hoặc focus.</p>
+    </a>
+  </section>
+</Base>
+
+<style>
+  .demo {
+    padding-block: var(--space-7);
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  .eyebrow {
+    color: var(--color-green);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    color: var(--color-bg);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border-color: var(--color-green);
+    color: var(--color-green);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--color-green-hover);
+    color: var(--color-green-hover);
+  }
+
+  .card {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 28rem;
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover,
+  .card:focus-visible {
+    border-color: var(--color-green);
+    color: var(--color-text);
+  }
+
+  .card-text {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+</style>

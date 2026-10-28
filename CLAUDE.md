@@ -4,3 +4,4 @@
 - Mobile first. Test at 375 px and 1280 px before saying a phase is done.
 - Do only the phase I ask for. List what you changed at the end.
 - Do not invent product specs. If data is missing, leave a TODO and tell me.
+- Brown = actions (primary buttons, links, prices). Green = identity accents (outline buttons, eyebrows, icons, borders, focus). No large green backgrounds. Never brown on green.
