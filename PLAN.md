@@ -141,9 +141,18 @@ Collection, Our Story, Fit & Care (how to measure, with a simple SVG diagram), P
 - Lighthouse ≥ 90 on all four scores
 - Small motion only: fade-in on scroll, hover on cards. Respect `prefers-reduced-motion`.
 
+### Phase 6.5 — Images (done)
+Renders copied from `hinhanh/` (git-ignored, originals never edited) to `src/assets/products/` as lossless WebP with ASCII names. `Render.astro` wraps `<Picture>`: AVIF + WebP, widths 480/960/1440, never above the source. Frames 1:1 on white, `object-fit: contain`. One color per product, so the swatch hides itself.
+
+### Phase 6.6 — Real data and copy (done)
+`products.ts` and `site.ts` hold real data, no `[SAMPLE]` or `TODO`; `npm run build` passes the data guard. Shelf slug renamed to `wood-corner-shelf`. `site.seo.noindex` stays `true` until launch.
+
 ### Phase 7 — Deploy
-- Push to GitHub, import into Vercel, framework preset = Astro
-- Check every route on the live URL, including a page refresh on `/products/...`
+- `engines.node` = `22.x` (Vercel picks the latest Node 22)
+- Push `main` to a private GitHub repo (`woody-web`). Never commit `hinhanh/` or `dist/`
+- Vercel: Add New → Project → Import the repo, framework preset = Astro, build `npm run build`, output `dist`
+- Check every route on the live URL, including a page refresh on `/products/wood-cabinet` and `/products/wood-corner-shelf`
+- Updating: edit `products.ts` / `site.ts`, run `npm test` and `npm run build`, push to `main` → Vercel redeploys. Full steps in README.md
 
 ---
 

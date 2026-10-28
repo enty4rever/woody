@@ -3,7 +3,7 @@ dist/
 # generated types
 .astro/
 
-# raw renders (25 MB), not used by the site yet
+# raw renders (25 MB). The site uses copies in src/assets/products/; never commit these
 hinhanh/
 
 # dependencies
